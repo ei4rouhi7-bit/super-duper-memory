@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豪華絢爛・参拝おみくじ</title>
+    <style>
+        body {
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            background-color: #f2ebd9;
+            background-image: radial-gradient(#e6dabe 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .omikuji-card {
+            background: #fcfaf2;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(139, 0, 0, 0.15);
+            text-align: center;
+            max-width: 480px;
+            width: 100%;
+            border: 4px double #8a1717;
+            position: relative;
+        }
+
+        h1 {
+            color: #8a1717;
+            margin-top: 0;
+            font-size: 26px;
+            letter-spacing: 4px;
+            border-bottom: 1px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        /* 共通ボタンコンテナ・矢印 */
+        .button-container {
+            margin: 25px 0 15px 0;
+            position: relative;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #8a1717;
+            animation: bounce 1s infinite;
+            margin-bottom: 5px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .red-btn {
+            background: linear-gradient(135deg, #bc2424, #8a1717);
+            color: #fffde8;
+            border: 2px solid #d4af37;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(138, 23, 23, 0.4);
+            transition: all 0.2s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .red-btn:hover {
+            background: linear-gradient(135deg, #d32f2f, #a11b1b);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(138, 23, 23, 0.5);
+        }
+
+        .end-btn {
+            background-color: #f0e6d2;
+            color: #5c4b37;
+            border: 1px solid #c2b49a;
+            padding: 10px 25px;
+            font-size: 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .end-btn:hover {
+            background-color: #e4d7be;
+        }
+
+        /* --- 豪華なおみくじ箱の演出 --- */
+        .animation-area {
+            display: none;
+            position: relative;
+            height: 220px;
+            margin: 20px 0;
+        }
+
+        .omikuji-box {
+            width: 75px;
+            height: 160px;
+            background: linear-gradient(90deg, #96662d, #d7a15c 30%, #f3d4a0 50%, #d7a15c 70%, #784e1b);
+            margin: 0 auto;
+            position: relative;
+            border-radius: 2px;
+            box-shadow: 5px 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 金の装飾金具（上下） */
+        .omikuji-box::before, .omikuji-box::after {
+            content: '';
+            position: absolute;
+            left: 0; width: 100%; height: 10px;
+            background: linear-gradient(90deg, #aa7c11, #e5b93b, #fdefaa, #b38616);
+            border-top: 1px solid #fdefaa;
+            border-bottom: 1px solid #805c04;
+            box-sizing: border-box;
+        }
+        .omikuji-box::before { top: 0; }
+        .omikuji-box::after { bottom: 0; }
+
+        /* 「御神籤」の縦書き文字 */
+        .box-title {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            color: #222;
+            font-weight: bold;
+            font-size: 15px;
+            letter-spacing: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 10px 4px;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .shake-animation {
+            animation: shake 0.7s ease-in-out infinite;
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            20% { transform: rotate(20deg) translateY(-12px); }
+            40% { transform: rotate(-20deg) translateY(6px); }
+            60% { transform: rotate(15deg) translateY(-6px); }
+            80% { transform: rotate(-15deg) translateY(3px); }
+        }
+
+        /* 飛び出す棒 */
+        .omikuji-stick {
+            position: absolute;
+            bottom: 100%; left: 50%;
+            transform: translateX(-50%);
+            width: 14px; height: 0px;
+            background: linear-gradient(90deg, #e3cfa1, #fffde8);
+            border: 1px solid #b5945b;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            transition: height 0.4s ease-out 0.7s;
+            z-index: -1;
+        }
+        .pop-stick { height: 90px; }
+
+        /* --- 豪華に折りたたまれたおみくじ紙 --- */
+        .result-container {
+            display: none;
+            margin-top: 25px;
+            background: linear-gradient(to bottom, #fffef7 0%, #f4f0e1 33%, #fffef7 34%, #f4f0e1 66%, #fffef7 67%, #fffef7 100%);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 0 20px rgba(0,0,0,0.05);
+            padding: 30px 20px;
+            position: relative;
+            transform: scaleY(0);
+            transform-origin: top;
+            border: 3px solid #8a1717;
+        }
+
+        /* 豪華な二重枠の装飾 */
+        .result-container::after {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1px solid #d4af37;
+            pointer-events: none;
+        }
+
+        .paper-open { animation: openPaper 0.6s forwards ease-out; }
+        @keyframes openPaper {
+            0% { transform: scaleY(0); opacity: 0; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+
+        .fortune-result {
+            font-size: 38px;
+            font-weight: bold;
+            color: #8a1717;
+            margin: 0 0 20px 0;
+            letter-spacing: 8px;
+            border-bottom: 3px double #d4af37;
+            display: inline-block;
+            padding: 0 20px 5px 20px;
+            text-shadow: 1px 1px 0px #fff;
+        }
+
+        .comment-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .comment-table tr { border-bottom: 1px dashed #dcd1ba; }
+        .comment-table tr:last-child { border-bottom: none; }
+        .category-name {
+            font-weight: bold;
+            color: #8a1717;
+            padding: 12px 5px;
+            width: 75px;
+            vertical-align: top;
+        }
+        .category-text {
+            padding: 12px 10px;
+            color: #222;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* --- カレンダー＆スタンプエリア --- */
+        .calendar-container {
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            color: #5c4b37;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #c2b49a;
+        }
+        .calendar-table th, .calendar-table td {
+            border: 1px solid #e2dacb;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 14px;
+            position: relative;
+            width: 14.28%;
+        }
+        .calendar-table th {
+            background-color: #f7f3eb;
+            color: #5c4b37;
+        }
+        .calendar-table td { height: 45px; box-sizing: border-box; }
+        
+        /* 今日の日付の強調 */
+        .today-cell {
+            background-color: #fffde8;
+            font-weight: bold;
+            outline: 2px solid #d4af37;
+            outline-offset: -2px;
+        }
+
+        /* 済スタンプのデザインとアニメーション */
+        .stamp-done {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 32px; height: 32px;
+            border: 2px solid #bc2424;
+            color: #bc2424;
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 28px;
+            text-align: center;
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0;
+            user-select: none;
+            background: rgba(255,255,255,0.8);
+            box-sizing: border-box;
+        }
+
+        .stamp-animation {
+            animation: stampPunch 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes stampPunch {
+            0% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+            80% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.9; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(-15deg); opacity: 0.85; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="omikuji-card">
+    <div id="startScreen">
+        <h1>✨ 参拝開運御神籤 ✨</h1>
+        <p>心を落ち着かせ、おみくじをお引きください</p>
+        <div class="button-container">
+            <div class="arrow">⬇</div>
+            <button class="red-btn" id="startBtn">おみくじを引く</button>
+        </div>
+    </div>
+
+    <div class="animation-area" id="animationArea">
+        <div class="omikuji-box" id="omikujiBox">
+            <div class="box-title">御神籤</div>
+            <div class="omikuji-stick" id="omikujiStick"></div>
+        </div>
+    </div>
+
+    <div class="result-container" id="resultContainer">
+        <div style="font-size: 14px; color: #666;">謹んで運勢をお送りいたします</div>
+        <div class="fortune-result" id="fortuneResult">-</div>
+
+        <table class="comment-table">
+            <tr><td class="category-name">💼 仕事</td><td class="category-text" id="jobComment"></td></tr>
+            <tr><td class="category-name">❤️ 恋愛</td><td class="category-text" id="loveComment"></td></tr>
+            <tr><td class="category-name">✏️ 勉学</td><td class="category-text" id="studyComment"></td></tr>
+            <tr><td class="category-name">💍 結婚</td><td class="category-text" id="marriageComment"></td></tr>
+            <tr><td class="category-name">📦 転居</td><td class="category-text" id="moveComment"></td></tr>
+        </table>
+
+        <div class="button-container">
+            <div class="arrow">⬇</div>
+            <button class="red-btn" id="retryBtn">もう一度引く</button>
+        </div>
+        <div>
+            <button class="end-btn" id="endBtn">終了する</button>
+        </div>
+    </div>
+
+    <div class="calendar-container" id="calendarContainer">
+        <div class="calendar-title" id="calendarMonthTitle">0000年00月 参拝記録</div>
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th style="color:#e53935;">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th style="color:#1e88e5;">土</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody">
+                </tbody>
+        </table>
+        <button class="end-btn" id="backToStartBtn">最初の画面に戻る</button>
+    </div>
+</div>
+
+<script>
+    const fortunes = ['大吉', '中吉', '小吉', '吉', '末吉', '凶'];
+
+    const comments = {
+        '大吉': {
+            job: ['これまでの努力が実を結び、大出世の兆し！', '新しい企画が次々と通る最高の運気です。'],
+            love: ['理想以上の相手との素晴らしい出会いがあるかも。', '恋人との絆が最高潮に深まる時期です。'],
+            study: ['集中力が研ぎ澄まされ、難関試験も突破の気配。', '努力した分だけ結果が出る、最高の学習期！'],
+            marriage: ['具体的な話がトントン拍子に進むでしょう。', '運命の赤い糸を手繰り寄せる瞬間が近づいています。'],
+            move: ['南か東への転居に大吉あり。良い物件が見つかる。', '今が引っ越しのベストタイミングです。']
+        },
+        '中吉': {
+            job: ['順調に成果を出せる。チームワークを大切に。', '上司からの評価が上がるチャンスが到来。'],
+            love: ['飾らない自然体な魅力が相手に伝わります。', '意外な身近な人物からアプローチの予感。'],
+            study: ['苦手分野を克服できるチャンス。復習を重点的に。', '計画通りに進めれば良い結果が残せます。'],
+            marriage: ['焦らずじっくり関係を深めるのが吉。', '周囲の応援を得て前進するでしょう。'],
+            move: ['焦らず探せば、希望に近い場所が見つかります。', '部屋の模様替えだけでも運気がアップします。']
+        },
+        '小吉': {
+            job: ['一歩一歩着実に進めることでミスを防げます。', '大きな変化はないが、安定した仕事ぶりを発揮。'],
+            love: ['小さな気配りが相手の心を動かすきっかけに。', '共通の趣味から会話が弾みそうです。'],
+            study: ['毎日少しずつの積み重ねが、後に大きな力になります。', '暗記系の科目にツキがあります。'],
+            marriage: ['家族への紹介など、内固めをするのに良い時期。', '小さな幸せを感じられる穏やかな進展あり。'],
+            move: ['現状維持も悪くないですが、近場への移動なら吉。', '住環境の掃除を徹底すると運気が上がります。']
+        },
+        '吉': {
+            job: ['平凡に見える業務の中に、成長のヒントがあります。', '我慢強く取り組めば、午後から運気が上向きます。'],
+            love: ['まずは友達関係から。少しずつ距離を縮めて。', '聞き手に回ることで好感度がアップします。'],
+            study: ['応用よりも、まずは基礎をしっかり見直すこと。', '図書館など静かな場所での勉強がはかどります。'],
+            marriage: ['焦りは禁物。相手のペースを尊重しましょう。', 'お互いの価値観を話し合う良い機会です。'],
+            move: ['急な引越しは避け、まずは情報収集をしっかりと。', '時期を少しずらした方が好条件に出会えます。']
+        },
+        '末吉': {
+            job: ['今は下積みの時期。基礎を固めると後半に花開きます。', '焦って結果を求めず、周囲のサポートに徹して吉。'],
+            love: ['派手な進展はなくても、少しずつ信頼が深まります。', '相手の本音をじっくり聴く姿勢がカギ。'],
+            study: ['成果が出るまで時間がかかりますが、諦めずに継続を。', '基礎問題集を何度も解き直すのが吉。'],
+            marriage: ['小さな問題も放置せず、対話を重ねることで円満に。', '一歩ずつ着実に進めれば、やがて良い結着へ。'],
+            move: ['無理な移動は控え、現在の住居を整理整頓しましょう。', '下調べをいつもより念入りに行えば吉。']
+        },
+        '凶': {
+            job: ['ケアレスミスに注意。ダブルチェックを忘れずに。', '無理をせず、今日は定時で帰って体調を整えましょう。'],
+            love: ['言葉のすれ違いに注意。相手を思いやる発言を。', '今は自分磨きに集中すると、後で良い波が来ます。'],
+            study: ['集中力が途切れがばち。適度な休憩を挟みましょう。', '難問にこだわらず、得意なところから手を付けて。'],
+            marriage: ['周囲の意見に惑わされず、二人の意思を尊重して。', '一歩引いて、冷静に将来を見つめ直すとき。'],
+            move: ['今は動くべき時ではありません。現在の住まいを快適に。', '物件を探すなら、条件を厳しめに見直して。']
+        }
+    };
+
+    function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    // おみくじを引く演出
+    function playOmikuji() {
+        document.getElementById('startScreen').style.display = 'none';
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('resultContainer').classList.remove('paper-open');
+        document.getElementById('animationArea').style.display = 'block';
+        
+        const box = document.getElementById('omikujiBox');
+        const stick = document.getElementById('omikujiStick');
+        
+        box.classList.remove('shake-animation');
+        stick.classList.remove('pop-stick');
+        void box.offsetWidth; 
+        
+        box.classList.add('shake-animation');
+
+        setTimeout(() => {
+            box.classList.remove('shake-animation');
+            stick.classList.add('pop-stick');
+        }, 700);
+
+        setTimeout(() => {
+            document.getElementById('animationArea').style.display = 'none';
+            
+            const selectedFortune = getRandomElement(fortunes);
+            const categoryData = comments[selectedFortune];
+
+            document.getElementById('fortuneResult').textContent = selectedFortune;
+            document.getElementById('jobComment').textContent = getRandomElement(categoryData.job);
+            document.getElementById('loveComment').textContent = getRandomElement(categoryData.love);
+            document.getElementById('studyComment').textContent = getRandomElement(categoryData.study);
+            document.getElementById('marriageComment').textContent = getRandomElement(categoryData.marriage);
+            document.getElementById('moveComment').textContent = getRandomElement(categoryData.move);
+
+            const resultBox = document.getElementById('resultContainer');
+            resultBox.style.display = 'block';
+            resultBox.classList.add('paper-open');
+        }, 1300);
+    }
+
+    // カレンダーの動的生成とスタンプ演出
+    function showCalendarAndStamp() {
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('calendarContainer').style.display = 'block';
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth(); // 0-11
+        const todayIdx = now.getDate();
+
+        // タイトル設定
+        document.getElementById('calendarMonthTitle').textContent = `${year}年${month + 1}月 参拝記録`;
+
+        // カレンダーの日付ロジック
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        const tbody = document.getElementById('calendarBody');
+        tbody.innerHTML = '';
+
+        let date = 1;
+        for (let i = 0; i < 6; i++) { // 最大6行
+            let row = document.createElement('tr');
+            let hasCells = false;
+
+            for (let j = 0; j < 7; j++) {
+                let cell = document.createElement('td');
+                if (i === 0 && j < firstDay) {
+                    // 空白セル
+                    cell.textContent = '';
+                } else if (date > lastDate) {
+                    // 月末以降
+                    cell.textContent = '';
+                } else {
+                    cell.textContent = date;
+                    if (date === todayIdx) {
+                        cell.classList.add('today-cell');
+                        // スタンプ要素を仕込む
+                        cell.innerHTML = `${date}<div class="stamp-done" id="todayStamp">済</div>`;
+                    }
+                    date++;
+                    hasCells = true;
+                }
+                row.appendChild(cell);
+            }
+            if (!hasCells) break;
+            tbody.appendChild(row);
+        }
+
+        // カレンダー表示から一瞬遅らせてスタンプをポンッと押す
+        setTimeout(() => {
+            const stamp = document.getElementById('todayStamp');
+            if (stamp) stamp.classList.add('stamp-animation');
+        }, 300);
+    }
+
+    // イベント設定
+    document.getElementById('startBtn').addEventListener('click', playOmikuji);
+    document.getElementById('retryBtn').addEventListener('click', playOmikuji);
+    document.getElementById('endBtn').addEventListener('click', showCalendarAndStamp);
+    
+    // 完全にリセットして戻る
+    document.getElementById('backToStartBtn').addEventListener('click', function() {
+        document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('startScreen').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
