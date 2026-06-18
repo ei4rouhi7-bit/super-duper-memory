@@ -1,526 +1,414 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>豪華絢爛・参拝おみくじ</title>
+  <style>
+    body {
+      font-family: 'Hiragino Mincho ProN', 'Georgia', serif;
+      background-color: #f2ebd9;
+      background-image: radial-gradient(#dcd1b4 1px, transparent 1px);
+      background-size: 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>豪華絢爛・参拝おみくじ</title>
-    <style>
-        body {
-            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
-            background-color: #f2ebd9;
-            background-image: radial-gradient(#e6dabe 1px, transparent 1px);
-            background-size: 20px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    /* メインカード */
+    .container {
+      background-color: #fcf9f2;
+      border: 3px double #8a1414;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 450px;
+      padding: 30px 20px;
+      box-sizing: border-box;
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-        .omikuji-card {
-            background: #fcfaf2;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(139, 0, 0, 0.15);
-            text-align: center;
-            max-width: 480px;
-            width: 100%;
-            border: 4px double #8a1717;
-            position: relative;
-        }
+    h1 {
+      font-size: 24px;
+      color: #8a1414;
+      margin-top: 0;
+      letter-spacing: 2px;
+    }
 
-        h1 {
-            color: #8a1717;
-            margin-top: 0;
-            font-size: 26px;
-            letter-spacing: 4px;
-            border-bottom: 1px solid #d4af37;
-            padding-bottom: 10px;
-        }
+    p.intro {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 30px;
+    }
 
-        /* 共通ボタンコンテナ・矢印 */
-        .button-container {
-            margin: 25px 0 15px 0;
-            position: relative;
-        }
+    /* ボタン */
+    .btn {
+      background: linear-gradient(135deg, #a71d1d, #700e0e);
+      color: #fff;
+      border: 2px solid #d4af37;
+      padding: 12px 35px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
 
-        .arrow {
-            font-size: 24px;
-            color: #8a1717;
-            animation: bounce 1s infinite;
-            margin-bottom: 5px;
-        }
+    .btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
+    /* おみくじ結果表示エリア */
+    .result-box {
+      margin-top: 30px;
+      display: none;
+      animation: fadeIn 1s ease forwards;
+    }
 
-        .red-btn {
-            background: linear-gradient(135deg, #bc2424, #8a1717);
-            color: #fffde8;
-            border: 2px solid #d4af37;
-            padding: 14px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(138, 23, 23, 0.4);
-            transition: all 0.2s ease;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .red-btn:hover {
-            background: linear-gradient(135deg, #d32f2f, #a11b1b);
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(138, 23, 23, 0.5);
-        }
+    .unsei {
+      font-size: 38px;
+      color: #e03d3d;
+      font-weight: bold;
+      margin: 15px 0;
+      letter-spacing: 4px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
 
-        .end-btn {
-            background-color: #f0e6d2;
-            color: #5c4b37;
-            border: 1px solid #c2b49a;
-            padding: 10px 25px;
-            font-size: 15px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-        .end-btn:hover {
-            background-color: #e4d7be;
-        }
+    .negai {
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+      background: #f5edd6;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #8a1414;
+      text-align: left;
+      margin-bottom: 40px;
+    }
 
-        /* --- 豪華なおみくじ箱の演出 --- */
-        .animation-area {
-            display: none;
-            position: relative;
-            height: 220px;
-            margin: 20px 0;
-        }
+    /* ⛩️ 神様セクション（余白を多めに広く設定） */
+    .god-separator {
+      border: 0;
+      height: 1px;
+      background-image: linear-gradient(to right, transparent, #d4af37, transparent);
+      margin: 40px 0 30px 0;
+    }
 
-        .omikuji-box {
-            width: 75px;
-            height: 160px;
-            background: linear-gradient(90deg, #96662d, #d7a15c 30%, #f3d4a0 50%, #d7a15c 70%, #784e1b);
-            margin: 0 auto;
-            position: relative;
-            border-radius: 2px;
-            box-shadow: 5px 10px 20px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .god-box {
+      text-align: left;
+      padding: 10px 10px 20px 10px;
+    }
 
-        /* 金の装飾金具（上下） */
-        .omikuji-box::before, .omikuji-box::after {
-            content: '';
-            position: absolute;
-            left: 0; width: 100%; height: 10px;
-            background: linear-gradient(90deg, #aa7c11, #e5b93b, #fdefaa, #b38616);
-            border-top: 1px solid #fdefaa;
-            border-bottom: 1px solid #805c04;
-            box-sizing: border-box;
-        }
-        .omikuji-box::before { top: 0; }
-        .omikuji-box::after { bottom: 0; }
+    .god-title {
+      font-size: 13px;
+      color: #8a1414;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
 
-        /* 「御神籤」の縦書き文字 */
-        .box-title {
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            color: #222;
-            font-weight: bold;
-            font-size: 15px;
-            letter-spacing: 6px;
-            background: rgba(255, 255, 255, 0.4);
-            padding: 10px 4px;
-            border-radius: 3px;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
+    .god-name {
+      font-size: 22px;
+      color: #222;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-        .shake-animation {
-            animation: shake 0.7s ease-in-out infinite;
-        }
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg) translateY(0); }
-            20% { transform: rotate(20deg) translateY(-12px); }
-            40% { transform: rotate(-20deg) translateY(6px); }
-            60% { transform: rotate(15deg) translateY(-6px); }
-            80% { transform: rotate(-15deg) translateY(3px); }
-        }
+    .god-item {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
 
-        /* 飛び出す棒 */
-        .omikuji-stick {
-            position: absolute;
-            bottom: 100%; left: 50%;
-            transform: translateX(-50%);
-            width: 14px; height: 0px;
-            background: linear-gradient(90deg, #e3cfa1, #fffde8);
-            border: 1px solid #b5945b;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            transition: height 0.4s ease-out 0.7s;
-            z-index: -1;
-        }
-        .pop-stick { height: 90px; }
+    .god-label {
+      font-weight: bold;
+      color: #8a1414;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 4px;
+      border-bottom: 1px dashed #dcd1b4;
+      padding-bottom: 2px;
+    }
 
-        /* --- 豪華に折りたたまれたおみくじ紙 --- */
-        .result-container {
-            display: none;
-            margin-top: 25px;
-            background: linear-gradient(to bottom, #fffef7 0%, #f4f0e1 33%, #fffef7 34%, #f4f0e1 66%, #fffef7 67%, #fffef7 100%);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 0 20px rgba(0,0,0,0.05);
-            padding: 30px 20px;
-            position: relative;
-            transform: scaleY(0);
-            transform-origin: top;
-            border: 3px solid #8a1717;
-        }
+    .god-value {
+      font-size: 14px;
+      color: #333;
+      padding-left: 4px;
+    }
 
-        /* 豪華な二重枠の装飾 */
-        .result-container::after {
-            content: '';
-            position: absolute;
-            top: 4px; left: 4px; right: 4px; bottom: 4px;
-            border: 1px solid #d4af37;
-            pointer-events: none;
-        }
+    /* カレンダー用コンテナ */
+    .calendar-container {
+      background-color: #fcf9f2;
+      border: 1px solid #c8b995;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 450px;
+      padding: 20px 15px;
+      box-sizing: border-box;
+    }
 
-        .paper-open { animation: openPaper 0.6s forwards ease-out; }
-        @keyframes openPaper {
-            0% { transform: scaleY(0); opacity: 0; }
-            100% { transform: scaleY(1); opacity: 1; }
-        }
+    .calendar-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #8a1414;
+      margin-bottom: 15px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
 
-        .fortune-result {
-            font-size: 38px;
-            font-weight: bold;
-            color: #8a1717;
-            margin: 0 0 20px 0;
-            letter-spacing: 8px;
-            border-bottom: 3px double #d4af37;
-            display: inline-block;
-            padding: 0 20px 5px 20px;
-            text-shadow: 1px 1px 0px #fff;
-        }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
 
-        .comment-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        .comment-table tr { border-bottom: 1px dashed #dcd1ba; }
-        .comment-table tr:last-child { border-bottom: none; }
-        .category-name {
-            font-weight: bold;
-            color: #8a1717;
-            padding: 12px 5px;
-            width: 75px;
-            vertical-align: top;
-        }
-        .category-text {
-            padding: 12px 10px;
-            color: #222;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+    .weekday {
+      font-size: 12px;
+      font-weight: bold;
+      color: #666;
+      padding-bottom: 5px;
+    }
 
-        /* --- カレンダー＆スタンプエリア --- */
-        .calendar-container {
-            display: none;
-            margin-top: 25px;
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; } to { opacity: 1; }
-        }
+    /* 日曜日の曜日ラベルを赤に */
+    .weekday.sunday {
+      color: #e03d3d;
+    }
 
-        .calendar-title {
-            font-size: 18px;
-            color: #5c4b37;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+    .day-cell {
+      background-color: #fff;
+      border: 1px solid #eadecc;
+      border-radius: 4px;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 13px;
+      position: relative;
+      font-weight: bold;
+      color: #444;
+    }
 
-        .calendar-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border: 1px solid #c2b49a;
-        }
-        .calendar-table th, .calendar-table td {
-            border: 1px solid #e2dacb;
-            padding: 10px 5px;
-            text-align: center;
-            font-size: 14px;
-            position: relative;
-            width: 14.28%;
-        }
-        .calendar-table th {
-            background-color: #f7f3eb;
-            color: #5c4b37;
-        }
-        .calendar-table td { height: 45px; box-sizing: border-box; }
-        
-        /* 今日の日付の強調 */
-        .today-cell {
-            background-color: #fffde8;
-            font-weight: bold;
-            outline: 2px solid #d4af37;
-            outline-offset: -2px;
-        }
+    /* 日曜日の日付数字を赤にするクラス */
+    .day-cell.sunday-num {
+      color: #e03d3d;
+    }
 
-        /* 済スタンプのデザインとアニメーション */
-        .stamp-done {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 32px; height: 32px;
-            border: 2px solid #bc2424;
-            color: #bc2424;
-            border-radius: 50%;
-            font-size: 15px;
-            font-weight: bold;
-            line-height: 28px;
-            text-align: center;
-            transform: translate(-50%, -50%) scale(3);
-            opacity: 0;
-            user-select: none;
-            background: rgba(255,255,255,0.8);
-            box-sizing: border-box;
-        }
+    .day-cell.empty {
+      background-color: transparent;
+      border: none;
+    }
 
-        .stamp-animation {
-            animation: stampPunch 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    /* 参拝スタンプ 💮 */
+    .stamp {
+      position: absolute;
+      font-size: 18px;
+      color: rgba(224, 61, 61, 0.85);
+      font-weight: bold;
+      transform: rotate(-15deg);
+      animation: stampPunch 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
 
-        @keyframes stampPunch {
-            0% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
-            80% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.9; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(-15deg); opacity: 0.85; }
-        }
-    </style>
+    @keyframes stampPunch {
+      from { transform: scale(3) rotate(-45deg); opacity: 0; }
+      to { transform: scale(1) rotate(-15deg); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="omikuji-card">
-    <div id="startScreen">
-        <h1>✨ 参拝開運御神籤 ✨</h1>
-        <p>心を落ち着かせ、おみくじをお引きください</p>
-        <div class="button-container">
-            <div class="arrow">⬇</div>
-            <button class="red-btn" id="startBtn">おみくじを引く</button>
-        </div>
-    </div>
-
-    <div class="animation-area" id="animationArea">
-        <div class="omikuji-box" id="omikujiBox">
-            <div class="box-title">御神籤</div>
-            <div class="omikuji-stick" id="omikujiStick"></div>
-        </div>
-    </div>
-
-    <div class="result-container" id="resultContainer">
-        <div style="font-size: 14px; color: #666;">謹んで運勢をお送りいたします</div>
-        <div class="fortune-result" id="fortuneResult">-</div>
-
-        <table class="comment-table">
-            <tr><td class="category-name">💼 仕事</td><td class="category-text" id="jobComment"></td></tr>
-            <tr><td class="category-name">❤️ 恋愛</td><td class="category-text" id="loveComment"></td></tr>
-            <tr><td class="category-name">✏️ 勉学</td><td class="category-text" id="studyComment"></td></tr>
-            <tr><td class="category-name">💍 結婚</td><td class="category-text" id="marriageComment"></td></tr>
-            <tr><td class="category-name">📦 転居</td><td class="category-text" id="moveComment"></td></tr>
-        </table>
-
-        <div class="button-container">
-            <div class="arrow">⬇</div>
-            <button class="red-btn" id="retryBtn">もう一度引く</button>
-        </div>
-        <div>
-            <button class="end-btn" id="endBtn">終了する</button>
-        </div>
-    </div>
-
-    <div class="calendar-container" id="calendarContainer">
-        <div class="calendar-title" id="calendarMonthTitle">0000年00月 参拝記録</div>
-        <table class="calendar-table">
-            <thead>
-                <tr>
-                    <th style="color:#e53935;">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th style="color:#1e88e5;">土</th>
-                </tr>
-            </thead>
-            <tbody id="calendarBody">
-                </tbody>
-        </table>
-        <button class="end-btn" id="backToStartBtn">最初の画面に戻る</button>
-    </div>
-</div>
-
-<script>
-    const fortunes = ['大吉', '中吉', '小吉', '吉', '末吉', '凶'];
-
-    const comments = {
-        '大吉': {
-            job: ['これまでの努力が実を結び、大出世の兆し！', '新しい企画が次々と通る最高の運気です。'],
-            love: ['理想以上の相手との素晴らしい出会いがあるかも。', '恋人との絆が最高潮に深まる時期です。'],
-            study: ['集中力が研ぎ澄まされ、難関試験も突破の気配。', '努力した分だけ結果が出る、最高の学習期！'],
-            marriage: ['具体的な話がトントン拍子に進むでしょう。', '運命の赤い糸を手繰り寄せる瞬間が近づいています。'],
-            move: ['南か東への転居に大吉あり。良い物件が見つかる。', '今が引っ越しのベストタイミングです。']
-        },
-        '中吉': {
-            job: ['順調に成果を出せる。チームワークを大切に。', '上司からの評価が上がるチャンスが到来。'],
-            love: ['飾らない自然体な魅力が相手に伝わります。', '意外な身近な人物からアプローチの予感。'],
-            study: ['苦手分野を克服できるチャンス。復習を重点的に。', '計画通りに進めれば良い結果が残せます。'],
-            marriage: ['焦らずじっくり関係を深めるのが吉。', '周囲の応援を得て前進するでしょう。'],
-            move: ['焦らず探せば、希望に近い場所が見つかります。', '部屋の模様替えだけでも運気がアップします。']
-        },
-        '小吉': {
-            job: ['一歩一歩着実に進めることでミスを防げます。', '大きな変化はないが、安定した仕事ぶりを発揮。'],
-            love: ['小さな気配りが相手の心を動かすきっかけに。', '共通の趣味から会話が弾みそうです。'],
-            study: ['毎日少しずつの積み重ねが、後に大きな力になります。', '暗記系の科目にツキがあります。'],
-            marriage: ['家族への紹介など、内固めをするのに良い時期。', '小さな幸せを感じられる穏やかな進展あり。'],
-            move: ['現状維持も悪くないですが、近場への移動なら吉。', '住環境の掃除を徹底すると運気が上がります。']
-        },
-        '吉': {
-            job: ['平凡に見える業務の中に、成長のヒントがあります。', '我慢強く取り組めば、午後から運気が上向きます。'],
-            love: ['まずは友達関係から。少しずつ距離を縮めて。', '聞き手に回ることで好感度がアップします。'],
-            study: ['応用よりも、まずは基礎をしっかり見直すこと。', '図書館など静かな場所での勉強がはかどります。'],
-            marriage: ['焦りは禁物。相手のペースを尊重しましょう。', 'お互いの価値観を話し合う良い機会です。'],
-            move: ['急な引越しは避け、まずは情報収集をしっかりと。', '時期を少しずらした方が好条件に出会えます。']
-        },
-        '末吉': {
-            job: ['今は下積みの時期。基礎を固めると後半に花開きます。', '焦って結果を求めず、周囲のサポートに徹して吉。'],
-            love: ['派手な進展はなくても、少しずつ信頼が深まります。', '相手の本音をじっくり聴く姿勢がカギ。'],
-            study: ['成果が出るまで時間がかかりますが、諦めずに継続を。', '基礎問題集を何度も解き直すのが吉。'],
-            marriage: ['小さな問題も放置せず、対話を重ねることで円満に。', '一歩ずつ着実に進めれば、やがて良い結着へ。'],
-            move: ['無理な移動は控え、現在の住居を整理整頓しましょう。', '下調べをいつもより念入りに行えば吉。']
-        },
-        '凶': {
-            job: ['ケアレスミスに注意。ダブルチェックを忘れずに。', '無理をせず、今日は定時で帰って体調を整えましょう。'],
-            love: ['言葉のすれ違いに注意。相手を思いやる発言を。', '今は自分磨きに集中すると、後で良い波が来ます。'],
-            study: ['集中力が途切れがばち。適度な休憩を挟みましょう。', '難問にこだわらず、得意なところから手を付けて。'],
-            marriage: ['周囲の意見に惑わされず、二人の意思を尊重して。', '一歩引いて、冷静に将来を見つめ直すとき。'],
-            move: ['今は動くべき時ではありません。現在の住まいを快適に。', '物件を探すなら、条件を厳しめに見直して。']
-        }
-    };
-
-    function getRandomElement(arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    // おみくじを引く演出
-    function playOmikuji() {
-        document.getElementById('startScreen').style.display = 'none';
-        document.getElementById('resultContainer').style.display = 'none';
-        document.getElementById('calendarContainer').style.display = 'none';
-        document.getElementById('resultContainer').classList.remove('paper-open');
-        document.getElementById('animationArea').style.display = 'block';
-        
-        const box = document.getElementById('omikujiBox');
-        const stick = document.getElementById('omikujiStick');
-        
-        box.classList.remove('shake-animation');
-        stick.classList.remove('pop-stick');
-        void box.offsetWidth; 
-        
-        box.classList.add('shake-animation');
-
-        setTimeout(() => {
-            box.classList.remove('shake-animation');
-            stick.classList.add('pop-stick');
-        }, 700);
-
-        setTimeout(() => {
-            document.getElementById('animationArea').style.display = 'none';
-            
-            const selectedFortune = getRandomElement(fortunes);
-            const categoryData = comments[selectedFortune];
-
-            document.getElementById('fortuneResult').textContent = selectedFortune;
-            document.getElementById('jobComment').textContent = getRandomElement(categoryData.job);
-            document.getElementById('loveComment').textContent = getRandomElement(categoryData.love);
-            document.getElementById('studyComment').textContent = getRandomElement(categoryData.study);
-            document.getElementById('marriageComment').textContent = getRandomElement(categoryData.marriage);
-            document.getElementById('moveComment').textContent = getRandomElement(categoryData.move);
-
-            const resultBox = document.getElementById('resultContainer');
-            resultBox.style.display = 'block';
-            resultBox.classList.add('paper-open');
-        }, 1300);
-    }
-
-    // カレンダーの動的生成とスタンプ演出
-    function showCalendarAndStamp() {
-        document.getElementById('resultContainer').style.display = 'none';
-        document.getElementById('calendarContainer').style.display = 'block';
-
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth(); // 0-11
-        const todayIdx = now.getDate();
-
-        // タイトル設定
-        document.getElementById('calendarMonthTitle').textContent = `${year}年${month + 1}月 参拝記録`;
-
-        // カレンダーの日付ロジック
-        const firstDay = new Date(year, month, 1).getDay();
-        const lastDate = new Date(year, month + 1, 0).getDate();
-
-        const tbody = document.getElementById('calendarBody');
-        tbody.innerHTML = '';
-
-        let date = 1;
-        for (let i = 0; i < 6; i++) { // 最大6行
-            let row = document.createElement('tr');
-            let hasCells = false;
-
-            for (let j = 0; j < 7; j++) {
-                let cell = document.createElement('td');
-                if (i === 0 && j < firstDay) {
-                    // 空白セル
-                    cell.textContent = '';
-                } else if (date > lastDate) {
-                    // 月末以降
-                    cell.textContent = '';
-                } else {
-                    cell.textContent = date;
-                    if (date === todayIdx) {
-                        cell.classList.add('today-cell');
-                        // スタンプ要素を仕込む
-                        cell.innerHTML = `${date}<div class="stamp-done" id="todayStamp">済</div>`;
-                    }
-                    date++;
-                    hasCells = true;
-                }
-                row.appendChild(cell);
-            }
-            if (!hasCells) break;
-            tbody.appendChild(row);
-        }
-
-        // カレンダー表示から一瞬遅らせてスタンプをポンッと押す
-        setTimeout(() => {
-            const stamp = document.getElementById('todayStamp');
-            if (stamp) stamp.classList.add('stamp-animation');
-        }, 300);
-    }
-
-    // イベント設定
-    document.getElementById('startBtn').addEventListener('click', playOmikuji);
-    document.getElementById('retryBtn').addEventListener('click', playOmikuji);
-    document.getElementById('endBtn').addEventListener('click', showCalendarAndStamp);
+  <div class="container">
+    <h1>✨ 参拝開運御神籤 ✨</h1>
+    <p class="intro">心を落ち着かせ、おみくじをお引きください</p>
     
-    // 完全にリセットして戻る
-    document.getElementById('backToStartBtn').addEventListener('click', function() {
-        document.getElementById('calendarContainer').style.display = 'none';
-        document.getElementById('startScreen').style.display = 'block';
-    });
-</script>
+    <button class="btn" id="draw-btn" onclick="drawOmikuji()">おみくじを引く</button>
 
+    <div class="result-box" id="result-box">
+      <div class="god-separator"></div>
+      <p style="font-size: 14px; color: #666; margin: 0;">あなたの本日の運勢</p>
+      <div class="unsei" id="unsei-output">大吉</div>
+      <div class="negai" id="negai-output">願い事：叶うでしょう。</div>
+      
+      <hr class="god-separator">
+      <div class="god-box">
+        <div class="god-title">━ 本日あなたと縁のある神様 ━</div>
+        <div class="god-name" id="god-name">天照大御神</div>
+        
+        <div class="god-item">
+          <span class="god-label">⛩️ 主な神社（二社）</span>
+          <span class="god-value" id="god-shrine">伊勢神宮（三重県）、東京大神宮（東京都）</span>
+        </div>
+        
+        <div class="god-item">
+          <span class="god-label">📜 経歴・功績</span>
+          <span class="god-value" id="god-history">太陽を象徴する女神であり、日本で最も尊い総氏神。弟の暴れっぷりに困って天岩戸に隠れ、世界を真っ暗にした神話が有名です。</span>
+        </div>
+        
+        <div class="god-item">
+          <span class="god-label">✨ ご利益</span>
+          <span class="god-value" id="god-benefit">国家安泰、子孫繁栄、あらゆる開運招福</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-container">
+    <div class="calendar-title" id="calendar-title">令和○年 ○月 参拝記録</div>
+    <div class="calendar-grid" id="calendar-grid">
+      <div class="weekday sunday">日</div>
+      <div class="weekday">月</div>
+      <div class="weekday">火</div>
+      <div class="weekday">水</div>
+      <div class="weekday">木</div>
+      <div class="weekday">金</div>
+      <div class="weekday">土</div>
+      </div>
+  </div>
+
+  <script>
+    // 1. おみくじの基本データ（運勢と願い事）
+    const omikujiData = [
+      { unsei: "🔥 大吉", negai: "願い事：心のままに動けば、すべての願いが思い通りに叶う最高の運気です。" },
+      { unsei: "✨ 吉", negai: "願い事：焦らず一歩ずつ進むことで、望む結果がしっかり付いてきます。" },
+      { unsei: "🍀 中吉", negai: "願い事：周囲への感謝を忘れなければ、思いがけない助けを得て成就します。" },
+      { unsei: "🍃 小吉", negai: "願い事：すぐには叶わぬよう見えても、粘り強く続ければ吉へと向かいます。" },
+      { unsei: "☀️ 末吉", negai: "願い事：控えめな態度を保ち、身の回りの整理をすると運気が開けます。" }
+    ];
+
+    // 2. 15柱の神様フルデータ
+    const godData = [
+      { name: "天照大御神 (アマテラスオオミカミ)", shrine: "伊勢神宮（三重県）、東京大神宮（東京都）", history: "太陽を象徴する女神であり、皇室の祖先とされる日本で最も尊い総氏神。弟スサノオの乱暴に困り天岩戸に隠れて世界を暗闇に包んだ神話が有名です。", benefit: "国家安泰、子孫繁栄、あらゆる開運招福" },
+      { name: "大国主神 (オオクニヌシノカミ)", shrine: "出雲大社（島根県）、大神神社（奈良県）", history: "因幡の白兎を助けた優しい神様。「大黒様」とも慕われ、数々の試練を乗り越えて出雲の国を作り固めたのち、天照大御神の孫へ国を譲られました。", benefit: "良縁成就（縁結び）、商売繁盛、五穀豊穣" },
+      { name: "須佐之男命 (スサノオノミコト)", shrine: "八坂神社（京都府）、氷川神社（埼玉県）", history: "天照大御神の弟。数々の激しい気性で高天原を追放されるも、出雲の国に降り立ってからは人々を苦しめていた怪物「ヤマタノオロチ」を退治した英雄です。", benefit: "厄除け、災難除け、学問上達、縁結び" },
+      { name: "伊邪那岐命 (イザナギノミコト)", shrine: "多賀大社（滋賀県）、伊弉諾神宮（兵庫県）", history: "日本の国土や、アマテラス、スサノオといった数多くの偉大な神々を生み出した「国生み・神生み」の父。淡路島で日本初の夫婦の契りを交わしました。", benefit: "夫婦円満、延命長寿、事業成就" },
+      { name: "伊邪那美命 (イザナミノミコト)", shrine: "伊弉册神社（兵庫県）、白山比咩神社（石川県）", history: "イザナギと共に日本列島と神々を創り上げた偉大な母なる女神。のちに黄泉の国の主宰神となり、生命の生と死を司る重要な存在となりました。", benefit: "子授かり、安産祈願、縁結び" },
+      { name: "神武天皇 (ジンムテンノウ)", shrine: "橿原神宮（奈良県）、宮崎神宮（宮崎県）", history: "日本の初代天皇（神日本磐余彦尊）。宮崎の地から東へ進む過酷な旅（東征）を続け、数々の敵を破って奈良の地で即位し、日本を建国しました。", benefit: "必勝祈願、開運招福、延命長寿" },
+      { name: "木花之佐久夜毘売 (コノハナノサクヤビメ)", shrine: "富士山本宮浅間大社（静岡県）、霧島神宮（鹿児島県）", history: "桜の花が咲き誇るような美貌を持つ女神。貞操を疑われた際、身の潔白を示すために自ら産屋に火を放ち、その炎の中で3人の子を無事出産した強い伝説があります。", benefit: "安産・子宝、火災除け、良縁祈願" },
+      { name: "建御雷神 (タケミカヅチノカミ)", shrine: "鹿島神宮（茨城県）、春日大社（奈良県）", history: "雷神であり、最強の武神。国譲りの交渉で出雲へ赴いた際、力比べを挑んできた相手の手を氷や剣に変えて圧倒しました。これが相撲の起源とされます。", benefit: "武芸上達、勝負運上昇、旅行安全" },
+      { name: "宇迦之御魂神 (ウカノミタマノカミ)", shrine: "伏見稲荷大社（京都府）、笠間稲荷神社（茨城県）", history: "スサノオの子とされる、お米や食べ物の女神。「お稲荷様」として全国の街や祠で最も多く祀られ、古くから日本人の日々の暮らしを支え続けています。", benefit: "商売繁盛、五穀豊穣、家内安全" },
+      { name: "菅原道真 (スガワラノミチザネ)", shrine: "太宰府天満宮（福岡県）、北野天満宮（京都府）", history: "平安時代に学者・政治家として最高峰の活躍をするも、無実の罪で太宰府へ流され没しました。その並外れた知識・才能から、のちに「学問の神様」となりました。", benefit: "学業成就、試験合格、文芸上達" },
+      { name: "誉田別命 (ホンダワケノミコト)", shrine: "宇佐神宮（大分県）、石清水八幡宮（京都府）", history: "第15代・応神天皇の神霊であり「八幡様」として有名。大陸の進んだ文化を日本に取り入れ産業を発展させ、のちに清和源氏ら武家から武運の神と仰がれました。", benefit: "武運長久、勝負運、出世開運" },
+      { name: "大山津見神 (オオヤマツミノカミ)", shrine: "大山祇神社（愛媛県）、三島大社（静岡県）", history: "日本のすべての山を支配し、司る山の総大将。コノハナノサクヤビメの父親でもあり、山林の守護だけでなく、お酒造りの祖神としても信仰を集めています。", benefit: "山林守護、商売繁盛、金運上昇" },
+      { name: "猿田毘古神 (サルタヒコノカミ)", shrine: "椿大神社（三重県）、猿田彦神社（三重県）", history: "天孫ニニギノミコトが地上に降り立つ際、天の交差点で待ち受けて進むべき道を案内した神様。その功績から、物事を良い方向へ導く「みちひらき」の神とされます。", benefit: "交通安全、物事の道開き、建築安全" },
+      { name: "少彦名神 (スクナヒコナノカミ)", shrine: "少彦名神社（大阪府）、神田明神（東京都）", history: "ガガイモの実の船に乗り、ガチョウの皮の服を着て現れた小さな神様。大国主神と協力して日本の国造りを行い、医療や温泉の知識を広めた知恵者です。", benefit: "病気平癒、身体健康、醸造安全" },
+      { name: "日本武尊 (ヤマトタケルノミコト)", shrine: "大鳥大社（大阪府）、熱田神宮（愛知県）", history: "景行天皇の皇子。類いまれなる武勇を持ち、西日本の熊襲（くまそ）や東日本の蝦夷（えみし）を次々と平定した、日本神話最大の伝説的ヤマトの英雄です。", benefit: "開運出世、除災招福、国土安泰" }
+    ];
+
+    // スマホの時計から日付を取得
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth(); // 0が1月、5が6月
+    const currentDay = today.getDate();
+
+    // 3. 令和の年数を計算してカレンダーのタイトルを設定
+    function setupCalendarTitle() {
+      const reiwaYear = currentYear - 2018; // 2019年が令和1年
+      const titleText = `令和${reiwaYear}年 ${currentMonth + 1}月 参拝記録`;
+      document.getElementById('calendar-title').innerText = titleText;
+    }
+
+    // 4. カレンダーを自動生成する関数
+    function generateCalendar() {
+      const grid = document.getElementById('calendar-grid');
+      
+      // その月の1日が何曜日か（0:日, 1:月, ... 6:土）
+      const firstDayIdx = new Date(currentYear, currentMonth, 1).getDay();
+      // その月が全部で何日あるか
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+      // 1日の前の空白を埋める
+      for (let i = 0; i < firstDayIdx; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'day-cell empty';
+        grid.appendChild(emptyCell);
+      }
+
+      // 日付セルを1日から末日まで作成
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        cell.innerText = day;
+        cell.id = `day-${day}`;
+
+        // その日が何曜日かを計算
+        const currentCheckDate = new Date(currentYear, currentMonth, day);
+        if (currentCheckDate.getDay() === 0) {
+          cell.classList.add('sunday-num'); // 日曜日なら数字を赤にするクラスを追加
+        }
+
+        // 過去にスタンプが押されているか確認（保存データから読み込み）
+        const storageKey = `stamp-${currentYear}-${currentMonth + 1}-${day}`;
+        if (localStorage.getItem(storageKey) === 'true') {
+          const stamp = document.createElement('span');
+          stamp.className = 'stamp';
+          stamp.innerText = '💮';
+          cell.appendChild(stamp);
+        }
+
+        grid.appendChild(cell);
+      }
+    }
+
+    // 5. おみくじを引くメイン処理
+    function drawOmikuji() {
+      // ボタンを一瞬無効化
+      const btn = document.getElementById('draw-btn');
+      btn.style.pointerEvents = 'none';
+      setTimeout(() => btn.style.pointerEvents = 'auto', 1000);
+
+      // ① 運勢をランダムで選ぶ
+      const randomOmikuji = omikujiData[Math.floor(Math.random() * omikujiData.length)];
+      document.getElementById('unsei-output').innerText = randomOmikuji.unsei;
+      document.getElementById('negai-output').innerText = randomOmikuji.negai;
+
+      // ② 15柱の神様からランダムで選ぶ
+      const randomGod = godData[Math.floor(Math.random() * godData.length)];
+      document.getElementById('god-name').innerText = randomGod.name;
+      document.getElementById('god-shrine').innerText = randomGod.shrine;
+      document.getElementById('god-history').innerText = randomGod.history;
+      document.getElementById('god-benefit').innerText = randomGod.benefit;
+
+      // 結果ボックスを表示
+      document.getElementById('result-box').style.display = 'block';
+
+      // ③ 今日の日付のセルにスタンプを押し、状態を永久保存する
+      const todayCell = document.getElementById(`day-${currentDay}`);
+      const storageKey = `stamp-${currentYear}-${currentMonth + 1}-${currentDay}`;
+
+      if (todayCell && !todayCell.querySelector('.stamp')) {
+        const stamp = document.createElement('span');
+        stamp.className = 'stamp';
+        stamp.innerText = '💮';
+        todayCell.appendChild(stamp);
+
+        // スマホに「この日はスタンプを押したよ」と記録
+        localStorage.setItem(storageKey, 'true');
+      }
+
+      // 結果が見えやすいように少し下へ自動スクロール
+      setTimeout(() => {
+        document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+    }
+
+    // アプリ起動時にカレンダーを初期化
+    setupCalendarTitle();
+    generateCalendar();
+  </script>
 </body>
 </html>
