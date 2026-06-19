@@ -26,7 +26,7 @@
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(139, 0, 0, 0.15);
             text-align: center;
-            max-width: 520px;
+            max-width: 540px;
             width: 100%;
             border: 4px double #8a1717;
             position: relative;
@@ -367,13 +367,8 @@
         .stamp-animation {
             animation: stampPunch 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes stampPunch {
-            0% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
-            80% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.9; }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(-15deg); opacity: 0.85; }
-        }
 
-        /* --- 🏛️ 新設：見開き和風図鑑UIデザイン --- */
+        /* --- 🏛️ 見開き和風図鑑＆索引ジャンプUI --- */
         .god-list-container {
             display: none;
             margin-top: 25px;
@@ -392,7 +387,6 @@
             margin-bottom: 15px;
         }
 
-        /* 和書の見開きを表現したブック型コンテナ */
         .book-layout {
             background: #f4eee1;
             border: 3px solid #63431a;
@@ -404,7 +398,6 @@
             text-align: left;
             margin-bottom: 15px;
         }
-        /* 本の中央の折り目線 */
         .book-layout::after {
             content: '';
             position: absolute;
@@ -414,7 +407,6 @@
             pointer-events: none;
         }
 
-        /* 左右ページに分けたレイアウト（1枚に贅沢に1柱） */
         .book-page-content {
             display: grid;
             grid-template-columns: 1fr;
@@ -443,7 +435,7 @@
         }
 
         .book-god-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             color: #8a1717;
             border-bottom: 2px double #d4af37;
@@ -469,7 +461,6 @@
             padding-left: 2px;
         }
 
-        /* ページめくり操作パネル */
         .page-controls {
             display: flex;
             justify-content: space-between;
@@ -495,6 +486,81 @@
             background: #ccc;
             border-color: #aaa;
             cursor: not-allowed;
+        }
+
+        /* --- 🗂️ 新設：属性別索引（インデックス）UIデザイン --- */
+        .index-container {
+            display: none;
+            margin-top: 25px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* 属性切り替え和風タブ */
+        .index-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            background: #e4d7be;
+            color: #5c4b37;
+            border: 1px solid #c2b49a;
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab-btn.active {
+            background: #8a1717;
+            color: #fffde8;
+            border-color: #d4af37;
+        }
+
+        /* 索引リスト */
+        .index-grid {
+            background: #fffdf9;
+            border: 1px solid #c2b49a;
+            border-radius: 6px;
+            padding: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+            text-align: left;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .index-grid::-webkit-scrollbar { width: 6px; }
+        .index-grid::-webkit-scrollbar-thumb { background-color: #c2b49a; border-radius: 3px; }
+
+        .index-item {
+            padding: 8px 12px;
+            background: #fdfcf7;
+            border: 1px solid #e2dacb;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .index-item:hover {
+            background: #fffde8;
+            border-color: #d4af37;
+        }
+        .index-item.locked-item {
+            color: #aaa;
+            background: #f2f0eb;
+            cursor: not-allowed;
+        }
+        .index-go-mark {
+            font-size: 11px;
+            color: #8a1717;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -582,27 +648,53 @@
         <button class="end-btn" id="backToStartBtn">最初の画面に戻る</button>
     </div>
 
-    <!-- 新・神様名鑑（見開き図鑑）画面 -->
+    <!-- 神様名鑑（見開き図鑑）画面 -->
     <div class="god-list-container" id="godListContainer">
         <div class="god-list-title">⛩️ 御神体・神様名鑑</div>
-        <div class="god-counter" id="godCounter">ご縁を結んだ神様: 0 / 25</div>
+        <div class="god-counter" id="godCounter">ご縁を結んだ神様: 0 / 100</div>
         
-        <!-- 見開き和書レイアウト -->
+        <div style="margin-bottom: 10px;">
+            <button class="sub-btn" id="toIndexBtn" style="background-color:#63431a;">🗂️ 属性別索引を開く</button>
+        </div>
+
+        <!-- 見開きレイアウト -->
         <div class="book-layout">
             <div class="book-page-content" id="bookPageContent">
-                <!-- JavaScriptでここに1ページ分の神様を出力 -->
             </div>
         </div>
 
         <!-- ページめくりコントロール -->
         <div class="page-controls">
             <button class="page-btn" id="prevPageBtn">◀ 前の頁</button>
-            <span class="page-num" id="pageNumDisplay">第 1 頁 / 全 25 頁</span>
+            <span class="page-num" id="pageNumDisplay">第 1 頁 / 全 100 頁</span>
             <button class="page-btn" id="nextPageBtn">次の頁 ▶</button>
         </div>
 
         <div style="text-align: center; margin-top: 25px;">
             <button class="sub-btn" id="backToCalendarBtn">📅 参拝記録に戻る</button>
+        </div>
+    </div>
+
+    <!-- 索引（インデックス）画面 -->
+    <div class="index-container" id="indexContainer">
+        <div class="god-list-title">🗂️ 神様名鑑・属性別索引</div>
+        <p style="font-size:12px; color:#666; margin-top:0;">タップするとその神様の頁へ直接飛びます</p>
+        
+        <!-- 属性タブ -->
+        <div class="index-tabs" id="indexTabs">
+            <button class="tab-btn active" onclick="filterIndex('皇祖')">皇祖・天神</button>
+            <button class="tab-btn" onclick="filterIndex('自然')">国生み・自然</button>
+            <button class="tab-btn" onclick="filterIndex('武神')">武神・英雄</button>
+            <button class="tab-btn" onclick="filterIndex('豊穣')">豊穣・福徳</button>
+            <button class="tab-btn" onclick="filterIndex('知恵')">知恵・芸能</button>
+        </div>
+
+        <!-- 索引リスト出力先 -->
+        <div class="index-grid" id="indexGrid">
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="sub-btn" id="backToBookBtn" style="background-color:#63431a;">📖 図鑑に戻る</button>
         </div>
     </div>
 </div>
@@ -642,7 +734,7 @@
         '末吉': {
             job: ['今は下積みの時期。基礎を固めると後半に花開きます。', '焦って結果を求めず、周囲のサポートに徹して吉。'],
             love: ['派手な進展はなくても、少しずつ信頼が深まります。', '相手の本音をじっくり聴く姿勢がカギ。'],
-            study: ['成果が出るまで時間がかかりますが、諦めずに継続を. 。', '基礎問題集を何度も解き直すのが吉。'],
+            study: ['成果が出るまで時間がかかりますが、諦めずに継続を。', '基礎問題集を何度も解き直すのが吉。'],
             marriage: ['小さな問題も放置せず、対話を重ねることで円満に。', '一歩ずつ着実に進めれば、やがて良い結着へ。'],
             move: ['無理な移動は控え、現在の住居を整理整頓しましょう。', '下調べをいつもより念入りを行えば吉。']
         },
@@ -655,58 +747,137 @@
         }
     };
 
-    // 🏛️ 豪華・日本の神々25柱データ拡充
+    // 🏛️ 八百万の神々・厳選100柱マスターデータ（5属性各20柱）
     const godData = [
-        { id: "amaterasu", name: "天照大御神 (アマテラスオオミカミ)", shrine: "伊勢神宮（三重）、東京大神宮（東京）", history: "太陽を象徴する最高の女神であり日本の総氏神。岩戸隠れの神話で有名です。", benefit: "国家安泰、あらゆる開運招福、子孫繁栄" },
-        { id: "okuninushi", name: "大国主神 (オオクニヌシノカミ)", shrine: "出雲大社（島根）、大神神社（奈良）", history: "因幡の白兎を助けた国造りの中心神。数々の試練を乗り越え出雲を興しました。", benefit: "良縁成就（縁結び）、商売繁盛、五穀豊穣" },
-        { id: "susanoo", name: "須佐之男命 (スサノオノミコト)", shrine: "八坂神社（京都）、氷川神社（埼玉）", history: "天照大御神の弟。出雲に降り立ち、怪物を退治した気性の激しい英雄神です。", benefit: "厄除け、災難除け、学問上達、縁結び" },
-        { id: "izanagi", name: "伊邪那岐命 (イザナギノミコト)", shrine: "多賀大社（滋賀）、伊弉諾神宮（兵庫）", history: "日本の国土や偉大な神々を生み出した国生みの父。夫婦の契りの祖とされます。", benefit: "夫婦円満、延命長寿、事業成就" },
-        { id: "izanami", name: "伊邪那美命 (イザナミノミコト)", shrine: "伊弉册神社（兵庫）、白山比咩神社（石川）", history: "イザナギと共に日本列島を創った母神。後に黄泉の国を司る主宰神となります。", benefit: "子授かり、安産祈願、縁結び" },
-        { id: "jinmu", name: "神武天皇 (ジンムテンノウ)", shrine: "橿原神宮（奈良）、宮崎神宮（宮崎）", history: "日本の初代天皇。日向の地から数々の困難を乗り越え大和を平定し即位しました。", benefit: "必勝祈願、開運招福、延命長寿" },
-        { id: "konohana", name: "木花之佐久夜毘売 (コノハナノサクヤビメ)", shrine: "富士山本宮浅間大社（静岡）、霧島神宮（鹿児島）", history: "桜のように美しい女神。身の潔白を示すため炎の中で出産した強さも持ちます。", benefit: "安産・子宝、火災除け、良縁祈願" },
-        { id: "takemikazuchi", name: "建御雷神 (タケミカヅチノカミ)", shrine: "鹿島神宮（茨城）、春日大社（奈良）", history: "力比べで敵を圧倒し国譲りを成功させた最強の武神。相撲の起源とも言われます。", benefit: "武芸上達、勝負運上昇、旅行安全" },
-        { id: "ukanomitama", name: "宇迦之御魂神 (ウカノミタマノカミ)", shrine: "伏見稲荷大社（京都）、笠間稲荷神社（茨城）", history: "お米や食物を司る「お稲荷様」。全国で最も多く祀られ、暮らしを支えます。", benefit: "商売繁盛、五穀豊穣、家内安全" },
-        { id: "michizane", name: "菅原道真 (スガワラノミチザネ)", shrine: "太宰府天満宮（福岡）、北野天満宮（京都）", history: "類まれな学識を持つ平安の文官。その秀才ぶりから学問の神と称えられます。", benefit: "学業成就、試験合格、文芸上達" },
-        { id: "hondawake", name: "誉田別命 (ホンダワケノミコト)", shrine: "宇佐神宮（大分）、石清水八幡宮（京都）", history: "応神天皇の神霊であり「八幡様」。清和源氏をはじめ武家から熱く信仰されました。", benefit: "武運長久、勝負運、出世開運" },
-        { id: "oyamatsumi", name: "大山津見神 (オオヤマツミノカミ)", shrine: "大山祇神社（愛媛）、三島大社（静岡）", history: "全ての山林を支配する山の総大将。お酒造りの祖神としても知られます。", benefit: "山林守護、商売繁盛、金運上昇" },
-        { id: "sarutahiko", name: "猿田毘古神 (サルタヒコノカミ)", shrine: "椿大神社（三重）、猿田彦神社（三重）", history: "天孫降臨の道案内を務めた神。物事を良い方向へ導くみちひらきの神です。", benefit: "交通安全、物事の道開き、建築安全" },
-        { id: "sukunahikona", name: "少彦名神 (スクナヒコナノカミ)", shrine: "少彦名神社（大阪）、神田明神（東京）", history: "大国主神と協力した小さな知恵の神。医薬や温泉の文化を伝えました。", benefit: "病気平癒、身体健康、醸造安全" },
-        { id: "yamatotakeru", name: "日本武尊 (ヤマトタケルノミコト)", shrine: "大鳥大社（大阪）、熱田神宮（愛知）", history: "知略と武勇で日本中を平定した、神話時代屈指の悲劇の伝説的英雄です。", benefit: "開運出世、除災招福、国土安泰" },
-        // 🆕 追加：16柱〜25柱
-        { id: "ninigi", name: "瓊瓊杵尊 (ニニギノミコト)", shrine: "霧島神宮（鹿児島）、高千穂神社（宮崎）", history: "天照大御神の孫で、地上の国を治めるため三種の神器と共に高千穂へ降臨しました。", benefit: "国家安泰、五穀豊穣、家内安全" },
-        { id: "futsunonushi", name: "経津主神 (フツヌシノカミ)", shrine: "香取神宮（千葉）、春日大社（奈良）", history: "タケミカヅチと共に地上に降り立ち、不服な神々を屈服させた鋭い剣の武神です。", benefit: "武芸上達、勝負運、国家安泰" },
-        { id: "toyouke", name: "豊受大御神 (トヨウケノオオミカミ)", shrine: "伊勢神宮外宮（三重）", history: "天照大御神の食事を司るために呼ばれた、衣食住と産業全般を守護する大女神。", benefit: "衣食住守護、諸産業繁盛、開運" },
-        { id: "ameuzume", name: "天宇受売命 (アメノウズメノミコト)", shrine: "芸能神社（京都）、荒立神社（宮崎）", history: "岩戸隠れの際、見事な踊りで八百万の神々を大爆笑させ、岩戸を開く契機を作った芸能の祖。", benefit: "芸能上達、技芸上達、縁結び" },
-        { id: "tsukuyomi", name: "月読命 (ツクヨミノミコト)", shrine: "月読宮（三重）、月読神社（京都）", history: "イザナギの右目から生まれ、夜の国を支配することを託された神秘的な月の神です。", benefit: "海上安全、夜間守護、五穀豊穣" },
-        { id: "kotoshironushi", name: "事代主神 (コトシロヌシノカミ)", shrine: "美保神社（島根）、長田神社（兵庫）", history: "大国主神の息子。知恵深く、後に「えびす様」として漁業や商業の神となりました。", benefit: "大漁満足、商売繁盛、福徳円満" },
-        { id: "takenominakata", name: "建御名方神 (タケミナカタノカミ)", shrine: "諏訪大社（長野）", history: "国譲りに反対しタケミカヅチに挑んだ熱き神。諏訪の地を守る軍神、風の神です。", benefit: "武運長久、勝負運、五穀豊穣" },
-        { id: "ugayafukiaezu", name: "鵜葺草葺不合命 (ウガヤフキアエズ)", shrine: "鵜戸神宮（宮崎）", history: "産屋の茅葺が葺き合わぬうちに生まれた神。初代神武天皇の父親にあたります。", benefit: "夫婦和合、安産、海上安全" },
-        { id: "tamayorihime", name: "玉依姫命 (タマヨリヒメノミコト)", shrine: "賀茂御祖神社（京都）、宝満宮竈門神社（福岡）", history: "神武天皇の母。霊力が非常に強く、優れた魂（依り代）を宿す高貴な清き女神です。", benefit: "縁結び、安産・子宝、厄除け" },
-        { id: "omikane", name: "思兼神 (オモイカネノカミ)", shrine: "戸隠神社（長野）、秩父神社（埼玉）", history: "岩戸隠れの際、天照大御神を誘い出すための名案を考え出した、八百万の神々の知恵袋。", benefit: "学業成就、受験合格、技術向上" }
+        // === 属性：皇祖・天神 (1〜20) ===
+        { id: "g1", type: "皇祖", name: "天照大御神 (アマテラスオオミカミ)", shrine: "伊勢神宮皇大神宮（三重）", history: "高天原を統べる太陽の女神。日本の総氏神とされる最高神です。", benefit: "国家安泰、子孫繁栄、あらゆる開運招福" },
+        { id: "g2", type: "皇祖", name: "瓊瓊杵尊 (ニニギノミコト)", shrine: "霧島神宮（鹿児島）", history: "天照大御神の孫。三種の神器を奉じて高千穂の峰に降臨しました。", benefit: "五穀豊穣、家内安全、国家安泰" },
+        { id: "g3", type: "皇祖", name: "神武天皇 (ジンムテンノウ)", shrine: "橿原神宮（奈良）", history: "日本の初代天皇。日向から東征を行い大和の地で即位しました。", benefit: "開運招福、必勝祈願、延命長寿" },
+        { id: "g4", type: "皇祖", name: "天之御中主神 (アメノミナカヌシノカミ)", shrine: "水天宮（東京）", history: "天地開闢の際に最初に現れた、宇宙の根源とされる絶対神。", benefit: "安産・子育、無病息災、厄除け" },
+        { id: "g5", type: "皇祖", name: "高御産巣日神 (タカミムスヒノカミ)", shrine: "東京大神宮（東京）", history: "万物を生成する「むすひ」の力を司る、天神を支える大原動力神。", benefit: "諸願成就、縁結び、開運" },
+        { id: "g6", type: "皇祖", name: "神産巣日神 (カミムスヒノカミ)", shrine: "出雲大社（島根）", history: "タカミムスヒと対をなす生産・生成の神。出雲系神話を助けます。", benefit: "五穀豊穣、病気平癒、生産守護" },
+        { id: "g7", type: "皇祖", name: "天忍穂耳尊 (アメノオシホミミ)", shrine: "英彦山神宮（福岡）", history: "天照大御神の長男でニニギの父。稲穂の成熟を司る農業の神。", benefit: "農業繁盛、勝運上昇、子孫繁栄" },
+        { id: "g8", type: "皇祖", name: "彦火火出見尊 (ヒコホホデミノミコト)", shrine: "鹿児島神宮（鹿児島）", history: "神話「海幸山幸」の山幸彦。龍宮で一玉を得て栄えました。", benefit: "農耕守護、航海安全、大漁満足" },
+        { id: "g9", type: "皇祖", name: "鵜葺草葺不合命 (ウガヤフキアエズ)", shrine: "鵜戸神宮（宮崎）", history: "産屋の茅葺が葺き合わぬうちに生まれた、神武天皇の父神。", benefit: "夫婦和合、安産守護、海上安全" },
+        { id: "g10", type: "皇祖", name: "玉依姫命 (タマヨリヒメノミコト)", shrine: "下鴨神社（京都）", history: "優れた霊力を宿す高貴な女神。賀茂氏の祖神であり神武の母。", benefit: "縁結び、安産、厄除け" },
+        { id: "g11", type: "皇祖", name: "豊玉姫命 (トヨタマヒメノミコト)", shrine: "若狭姫神社（福井）", history: "海神の娘で山幸彦の妻。出産時に龍（鰐）の姿に戻った神話が有名。", benefit: "安産祈願、海上安全、育児守護" },
+        { id: "g12", type: "皇祖", name: "天常立神 (アメノトコタチノカミ)", shrine: "駒形神社（岩手）", history: "天の永遠の成立を象徴する、天地開闢時の独り神。", benefit: "国土安泰、事業守護" },
+        { id: "g13", type: "皇祖", name: "国常立神 (クニノトコタチノカミ)", shrine: "十山神社（静岡）", history: "地上の国土が固まった永遠性を象徴する根源的な神。", benefit: "国家安泰、大地守護" },
+        { id: "g14", type: "皇祖", name: "意富斗能地神 (オホトノヂノカミ)", shrine: "大国魂神社（東京）", history: "神世七代の五代目にあたる、大地の基礎を整えた神。", benefit: "宅地安全、建築守護" },
+        { id: "g15", type: "皇祖", name: "角杙神 (ツヌグイノカミ)", shrine: "大物忌神社（山形）", history: "大地の芽生えや杭の基礎を司る、神世七代の一柱。", benefit: "国土開発、諸産業繁盛" },
+        { id: "g16", type: "皇祖", name: "面足神 (オモダルノカミ)", shrine: "第六天神社（神奈川）", history: "大地が満ち足りて容姿が整った美しさを象徴する神。", benefit: "容姿端麗、身体健全" },
+        { id: "g17", type: "皇祖", name: "宇比地邇神 (ウヒヂニノカミ)", shrine: "熊野速玉大社（和歌山）", history: "地球上がまだ泥水だった初期の泥土を象徴する太古の神。", benefit: "土木安全、豊作祈願" },
+        { id: "g18", type: "皇祖", name: "天神地祇 (テンジンチギ)", shrine: "全国の総社など", history: "高天原の神々と地上の神々の総称。八百万の全神霊を指します。", benefit: "諸願成就、一宮平穏" },
+        { id: "g19", type: "皇祖", name: "天穂日命 (アメノホヒノミコト)", shrine: "能義神社（島根）", history: "天照大御神の次男。出雲大社の国造としての職務の礎を築く。", benefit: "農業守護、産業開発、子孫繁栄" },
+        { id: "g20", type: "皇祖", name: "天津彦根命 (アマツヒコネノミコト)", shrine: "多度大社（三重）", history: "誓約の際に生まれた神。風や日の光、鍛冶を司ります。", benefit: "雨乞い祈願、鋳物業繁盛" },
+
+        // === 属性：自然・国生み (21〜40) ===
+        { id: "g21", type: "自然", name: "伊邪那岐命 (イザナギノミコト)", shrine: "多賀大社（滋賀）", history: "日本列島と多くの神々を創り出した、偉大なる国生みの父神。", benefit: "延命長寿、夫婦円満、事業成就" },
+        { id: "g22", type: "自然", name: "伊邪那美命 (イザナミノミコト)", shrine: "白山比咩神社（石川）", history: "イザナギと共に国を創った母神。のちに黄泉の主宰神となる。", benefit: "子授かり、安産成就、縁結び" },
+        { id: "g23", type: "自然", name: "月読命 (ツクヨミノミコト)", shrine: "月読宮（三重）", history: "イザナギの右目から生まれた、夜の国を支配する神秘的な月の神。", benefit: "海上安全、夜間守護、眼病平癒" },
+        { id: "g24", type: "自然", name: "大山津見神 (オオヤマツミノカミ)", shrine: "大山祇神社（愛媛）", history: "日本の全山林を統括する山の総大将。酒造りの祖ともされる。", benefit: "山林守護、鉱山安全、商売繁盛" },
+        { id: "g25", type: "自然", name: "大渡海神 (オオワタツミノカミ)", shrine: "綿津見神社（福岡）", history: "全ての海と潮流を支配する海の総帥。龍宮の主ともされる。", benefit: "航海安全、大漁満足、水難除け" },
+        { id: "g26", type: "自然", name: "高龗神 (タカオカミノカミ)", shrine: "貴船神社（京都）", history: "山峰の水を司る恵みの龍神。雨を降らせ、止める力を持つ。", benefit: "祈雨・止雨、運気昇騰、水商売繁盛" },
+        { id: "g27", type: "自然", name: "闇龗神 (クラオカミノカミ)", shrine: "丹生川上神社（奈良）", history: "谷間の奥深い水源を守る龍神。タカオカミと対をなします。", benefit: "水源守護、心願成就" },
+        { id: "g28", type: "自然", name: "志那都比古神 (シナツヒコノカミ)", shrine: "龍田大社（奈良）", history: "イザナギの息から生まれた風の神。航海や農作物を風害から守る。", benefit: "航海安全、風災除け、五穀豊穣" },
+        { id: "g29", type: "自然", name: "金山毘古神 (カナヤマビコノカミ)", shrine: "南宮大社（岐阜）", history: "鉱山や金属、製鉄の技術を司る、日本の鉱業の祖神。", benefit: "鉱業繁盛、金運上昇、刃物安全" },
+        { id: "g30", type: "自然", name: "火之迦具土神 (ヒノカグツチノカミ)", shrine: "秋葉山本宮秋葉神社（静岡）", history: "誕生時に母イザナミに大火傷を負わせた、強烈な炎の神。", benefit: "火災除け、郷中安全、鍛冶守護" },
+        { id: "g31", type: "自然", name: "大土地神 (オオトシノカミ)", shrine: "大歳神社（全国）", history: "スサノオの子。毎年の正月に各家庭へ幸福をもたらす来訪神。", benefit: "五穀豊穣、家内安全、開運福徳" },
+        { id: "g32", type: "自然", name: "波邇夜須毘売神 (ハニヤスビメ)", shrine: "埴生神社（千葉）", history: "土や粘土の性質を司る女神。陶器や農業の土台を守ります。", benefit: "陶芸上達、農地肥沃" },
+        { id: "g33", type: "自然", name: "水分神 (ミクラマリノカミ)", shrine: "吉野水分神社（奈良）", history: "配水を司る水源の神。「御子守（みこもり）」と通じ子宝の神へ。", benefit: "子授かり、安産、水利守護" },
+        { id: "g34", type: "自然", name: "鹿屋野比売神 (カヤノヒメノカミ)", shrine: "萱津神社（愛知）", history: "野原や草、萱（かや）を司る、優雅なる草の女神。", benefit: "野原守護、漬物安全、農業繁栄" },
+        { id: "g35", type: "自然", name: "木霊神 (ククノチノカミ)", shrine: "樽前山神社（北海道）", history: "木の幹や生命力を司る木の神。住宅の木材の守護神でもある。", benefit: "木材業繁盛、家体安全" },
+        { id: "g36", type: "自然", name: "野椎神 (ノヅチノカミ)", shrine: "全国の野祖社", history: "野の精霊であり、草むらや平野の境界を守る自然神。", benefit: "土地平穏、道中安全" },
+        { id: "g37", type: "自然", name: "大戸惑子神 (オオトマドコ)", shrine: "山岳霊場など", history: "深い山や渓谷で人を惑わせる自然の威厳を象徴する神。", benefit: "山岳安全、迷妄打破" },
+        { id: "g38", type: "自然", name: "木花之佐久夜毘売 (コノハナノサクヤビメ)", shrine: "富士山本宮浅間大社（静岡）", history: "桜のように美しい女神。炎の中で出産した逸話から火の神とも。", benefit: "安産・子宝、火災除け、良縁成就" },
+        { id: "g39", type: "自然", name: "石長比売 (イワナガヒメ)", shrine: "貴船神社結社（京都）", history: "コノハナの姉。岩のように不変の長寿の命を司る女神。", benefit: "不老長寿、縁結び（復縁）" },
+        { id: "g40", type: "自然", name: "鳥之石楠船神 (トリノイワクスフネ)", shrine: "神栖神社（茨城）", history: "神が乗る空飛ぶ楠の船そのものが神格化した、交通の祖神。", benefit: "交通安全、旅行安全、航空守護" },
+
+        // === 属性：武神・英雄 (41〜60) ===
+        { id: "g41", type: "武神", name: "須佐之男命 (スサノオノミコト)", shrine: "八坂神社（京都）", history: "天界を追われるも出雲でヤマタノオロチを退治した英雄神。", benefit: "厄除け、災難除け、縁結び" },
+        { id: "g42", type: "武神", name: "建御雷神 (タケミカヅチノカミ)", shrine: "鹿島神宮（茨城）", history: "力比べで敵を圧倒し国譲りを成功させた、最強の雷の武神。", benefit: "武芸上達、勝負運上昇、必勝祈願" },
+        { id: "g43", type: "武神", name: "経津主神 (フツヌシノカミ)", shrine: "香取神宮（千葉）", history: "タケミカヅチと対をなす、鋭い刀剣の威力を象徴する武神。", benefit: "災難除け、勝負運、心願成就" },
+        { id: "g44", type: "武神", name: "日本武尊 (ヤマトタケルノミコト)", shrine: "熱田神宮（愛知）", history: "数々の智略と武勇で日本中を平定した、神話最大の英雄。", benefit: "開運出世、除災招福、国土安泰" },
+        { id: "g45", type: "武神", name: "誉田別命 (ホンダワケノミコト)", shrine: "宇佐神宮（大分）", history: "応神天皇の神霊であり武家から「八幡様」として崇敬された神。", benefit: "武運長久、勝負運、出世開運" },
+        { id: "g46", type: "武神", name: "建御名方神 (タケミナカタノカミ)", shrine: "諏訪大社（長野）", history: "国譲りに最後まで抵抗し諏訪へ逃れ、その地を強固に守った軍神。", benefit: "勝負運、武芸上達、五穀豊穣" },
+        { id: "g47", type: "武神", name: "天手力男神 (アメノタヂカラオ)", shrine: "戸隠神社（長野）", history: "天岩戸をその怪力で引き開け、遠くへ投げ飛ばした剛力の神。", benefit: "筋力向上、スポーツ上達、開運" },
+        { id: "g48", type: "武神", name: "武甕槌命 (タケミカヅチ)", shrine: "春日大社（奈良）", history: "タケミカヅチノカミの別称。藤原氏の氏神として都を守る。", benefit: "必勝、魔除け、開運" },
+        { id: "g49", type: "武神", name: "八幡大神 (ハチマンオオカミ)", shrine: "石清水八幡宮（京都）", history: "源氏の氏神として、弓矢の神、勝利の神として名高い武神。", benefit: "必勝、厄除け、出世" },
+        { id: "g50", type: "武神", name: "金鵄 (キンシ)", shrine: "橿原付近の伝承", history: "神武天皇の弓の先に留まり、黄金の光を放って敵を怯ませた霊鳥。", benefit: "先路明視、勝利導き" },
+        { id: "g51", type: "武神", name: "大物主神 (オオモノヌシノカミ)", shrine: "大神神社（奈良）", history: "三輪山に鎮まる国造りの協力神であり、戦の吉凶を握る強力な蛇神。", benefit: "国難打破、疫病退散、産業開運" },
+        { id: "g52", type: "武神", name: "気長足姫尊 (オキナガタラシヒメ)", shrine: "住吉大社（大阪）", history: "神功皇后。身重の体で出陣し勝利を収めた勇敢な戦う皇后。", benefit: "安産守護、必勝、子育て" },
+        { id: "g53", type: "武神", name: "弟橘媛 (オトタチバナヒメ)", shrine: "吾妻神社（千葉）", history: "ヤマトタケルの妻。夫の危機を救うため自ら海へ身を投じた英婦。", benefit: "夫婦愛、海上安全、至誠成就" },
+        { id: "g54", type: "武神", name: "天之尾羽張神 (アメノオハバリ)", shrine: "天の安河の伝承", history: "イザナギの十拳剣の本体であり、神聖な神剣の威力そのもの。", benefit: "邪気退散、悪縁切り" },
+        { id: "g55", type: "武神", name: "布都御魂神 (フツノミタマ)", shrine: "石上神宮（奈良）", history: "神武東征の危機を救った、物部氏が奉斎する伝説の霊剣の神。", benefit: "起死回生、病魔退散、勝負運" },
+        { id: "g56", type: "武神", name: "天之逆鉾 (アメノサカホコ)", shrine: "高千穂峰山頂（宮崎）", history: "神々が大地をかき混ぜた矛の神威が山頂に残ったとされる神体。", benefit: "一念岩をも通す、国家安泰" },
+        { id: "g57", type: "武神", name: "天之都度兵主神 (アメノツドヘ)", shrine: "兵主神社（兵庫）", history: "古代の武器や軍の集結を司る、戦の規律を守る武神。", benefit: "勝利、組織統率" },
+        { id: "g58", type: "武神", name: "速秋津日子神 (ハヤアキツヒコ)", shrine: "港湾の社など", history: "川口の激流を司り、あらゆる罪や穢れを勢いよく飲み込む武神。", benefit: "災難消除、穢れ祓い" },
+        { id: "g59", type: "武神", name: "大将軍 (ダイショウグン)", shrine: "大将軍八神社（京都）", history: "陰陽道の星の神。方位の吉凶を司り、悪殺を破る強力な軍神。", benefit: "方除け、厄除け、大難除け" },
+        { id: "g60", type: "武神", name: "素戔嗚の剣 (スサノオノツルギ)", shrine: "八坂神社奥宮など", history: "スサノオがヤマタノオロチを尾から斬った際に得た剣の神威。", benefit: "武運、災難破断" },
+
+        // === 属性：豊穣・福徳 (61〜80) ===
+        { id: "g61", type: "豊穣", name: "大国主神 (オオクニヌシノカミ)", shrine: "出雲大社（島根）", history: "「大黒様」としても慕われる縁結びと国造りの大和の神。", benefit: "良縁成就（縁結び）、商売繁盛" },
+        { id: "g62", type: "豊穣", name: "宇迦之御魂神 (ウカノミタマノカミ)", shrine: "伏見稲荷大社（京都）", history: "お米や食べ物を司る「お稲荷様」。全国で最も信仰される。", benefit: "商売繁盛、五穀豊穣、家内安全" },
+        { id: "g63", type: "豊穣", name: "豊受大御神 (トヨウケノオオミカミ)", shrine: "伊勢神宮外宮（三重）", history: "天照大御神の食事を司る。衣食住すべての産業の守護神。", benefit: "衣食住守護、産業繁盛、開運" },
+        { id: "g64", type: "豊穣", name: "事代主神 (コトシロヌシノカミ)", shrine: "美保神社（島根）", history: "大国主の子。知恵深く「えびす様」として大漁や商業を司る。", benefit: "大漁満足、商売繁盛、福徳円満" },
+        { id: "g65", type: "豊穣", name: "大物主神 (オオモノヌシ)", shrine: "大神神社（奈良）", history: "三輪山の神。農業・醸造・医療など生活全般の幸福を司る。", benefit: "金運上昇、醸造安全、商売繁盛" },
+        { id: "g66", type: "豊穣", name: "保食神 (ウケモチノカミ)", shrine: "全国の保食社", history: "体から様々な食物を生み出し、日本の食生活の基盤を作った神。", benefit: "食物豊饒、牛馬守護" },
+        { id: "g67", type: "豊穣", name: "大歳神 (オオトシノカミ)", shrine: "各地の大歳神社", history: "その年の収穫の豊凶を司り、家々に実りを与える農耕の祖神。", benefit: "五穀豊穣、家運隆盛" },
+        { id: "g68", type: "豊穣", name: "御年神 (ミトシノカミ)", shrine: "葛木御歳神社（奈良）", history: "大歳神の子。穀物の実りそのものを神格化した、若々しい穀物神。", benefit: "実り成就、農業繁盛" },
+        { id: "g69", type: "豊穣", name: "鳴雷神 (ナルカミ)", shrine: "雷電神社（群馬）", history: "稲妻を落として雨をもたらし、田畑を潤す「稲妻の豊穣神」。", benefit: "落雷除け、雨乞い、豊作" },
+        { id: "g70", type: "豊穣", name: "若宇迦売神 (ワカウカノメノカミ)", shrine: "広瀬大社（奈良）", history: "瑞々しい稲の生育を見守る、食物と水の麗しき女神。", benefit: "水利守護、五穀豊穫" },
+        { id: "g71", type: "豊穣", name: "大山咋神 (オオヤマクイノカミ)", shrine: "松尾大社（京都）", history: "山の杭を打ち土地を開発した神。お酒造りの神として有名。", benefit: "醸造安全、商売繁盛、家内安全" },
+        { id: "g72", type: "豊穣", name: "草野姫神 (カヤノヒメ)", shrine: "各地の草祖社", history: "野の草を司る女神。田畑の周りの自然の恵みをもたらす。", benefit: "農業守護、園芸上達" },
+        { id: "g73", type: "豊穣", name: "竃三柱神 (カマドミハシラ)", shrine: "清荒神（兵庫）", history: "かまど（台所）の火を守り、家庭の食生活と安全を守る神。", benefit: "台所安全、火事除け、家内和合" },
+        { id: "g74", type: "豊穣", name: "恵比寿神 (エビスノカミ)", shrine: "西宮神社（兵庫）", history: "鯛を抱え釣竿を持つ、七福神の一柱。漁業から商業の神へ。", benefit: "商売繁盛、大漁、家内安全" },
+        { id: "g75", type: "豊穣", name: "大黒天 (ダイコクテン)", shrine: "神田明神（東京）", history: "大きな袋と打ち出の小槌を持つ福の神。大国主神と習合。", benefit: "財運上昇、出世開運、五穀豊穣" },
+        { id: "g76", type: "豊穣", name: "宇賀神 (ウガジン)", shrine: "弁財天社など", history: "体は蛇、頭は人間の老人。財をもたらす神秘的な福徳神。", benefit: "金運財運上昇、商売繁盛" },
+        { id: "g77", type: "豊穣", name: "水神 (スイジン)", shrine: "各地の水神宮", history: "井戸や田畑の水源を守り、日々の生活用水を清く保つ神。", benefit: "水源守護、水難除け" },
+        { id: "g78", type: "豊穣", name: "地主神 (ジヌシガミ)", shrine: "各神社の地主社", history: "その土地の元々の主であり、屋敷や集落全体の安全を守る神。", benefit: "土地安全、家屋平穏" },
+        { id: "g79", type: "豊穣", name: "新田神 (ニッタノカミ)", shrine: "全国の開墾地", history: "新しい田畑を開墾した開拓者の熱意が神格化した、フロンティアの神。", benefit: "新規事業成功、開墾守護" },
+        { id: "g80", type: "豊穣", name: "天びん神 (テンビンノカミ)", shrine: "商業地の社", history: "商売における公正な取引と商人の誠実さを守る福徳神。", benefit: "商取引安全、顧客獲得" },
+
+        // === 属性：知恵・芸能・文化 (81〜100) ===
+        { id: "g81", type: "知恵", name: "菅原道真 (スガワラノミチザネ)", shrine: "太宰府天満宮（福岡）", history: "類まれな学識を持つ平安の天才。学問・受験の神様の決定版。", benefit: "学業成就、試験合格、文芸上達" },
+        { id: "g82", type: "知恵", name: "天宇受売命 (アメノウズメノミコト)", shrine: "芸能神社（京都）", history: "岩戸隠れの際に見事な踊りで神々を沸かせた、芸能の祖神。", benefit: "芸能上達、技芸上達、良縁成就" },
+        { id: "g83", type: "知恵", name: "思兼神 (オモイカネノカミ)", shrine: "戸隠神社（長野）", history: "天岩戸の解決策など、数々の難局で知恵を出した八百万の頭脳。", benefit: "学業成就、知恵向上、技術開発" },
+        { id: "g84", type: "知恵", name: "少彦名神 (スクナヒコナノカミ)", shrine: "少彦名神社（大阪）", history: "大国主の国造りを助けた、医薬、温泉、酒造の小柄な知恵神。", benefit: "病気平癒、身体健康、醸造安全" },
+        { id: "g85", type: "知恵", name: "猿田毘古神 (サルタヒコノカミ)", shrine: "椿大神社（三重）", history: "天孫降臨の道案内を務めた、あらゆる道を切り拓く「みちひらき」の神。", benefit: "道開き、交通安全、建築安全" },
+        { id: "g86", type: "知恵", name: "和気清麻呂 (ワケノキヨマロ)", shrine: "護王神社（京都）", history: "平安京遷都の基礎を作り、国の危機を救った誠実なる大文官。", benefit: "足腰健全、厄除け、事業成功" },
+        { id: "g87", type: "知恵", name: "柿本人麻呂 (カキノモトノヒトマロ)", shrine: "高津柿本神社（島根）", history: "万葉集の歌聖。その言葉の美しさから歌道・学問の神とされる。", benefit: "和歌・文芸上達、学問向上" },
+        { id: "g88", type: "知恵", name: "天児屋根命 (アメノコヤネノミコト)", shrine: "春日大社（奈良）", history: "美しい祝詞を唱えて天照大御神を讃えた、言霊・儀式の神。", benefit: "言霊上達、出世開運、家内平穏" },
+        { id: "g89", type: "知恵", name: "天太玉命 (アメノフトダマノカミ)", shrine: "安房神社（千葉）", history: "岩戸隠れの儀式を統括した、日本の占術や忌部氏の織物の祖神。", benefit: "技術向上、占い上達、産業守護" },
+        { id: "g90", type: "知恵", name: "伊斯許理度売命 (イシコリドメ)", shrine: "日前神宮（和歌山）", history: "天照大御神を映し出す「八咫鏡」を作った、鋳物・工芸の女神。", benefit: "工芸上達、ものづくり繁盛" },
+        { id: "g91", type: "知恵", name: "玉祖命 (タマノヤノミコト)", shrine: "玉祖神社（山口）", history: "三種の神器の一つ「八尺瓊勾玉」を作った、宝石・眼鏡の祖神。", benefit: "眼鏡・宝石業繁盛、美術上達" },
+        { id: "g92", type: "知恵", name: "長脛彦の知恵 (ナガスネヒコ)", shrine: "大和の伝承", history: "古代大和を独自の文化と知恵で強固に統治していた王の英知。", benefit: "独自の道開拓、生存戦略" },
+        { id: "g93", type: "知恵", name: "天太玉の部下 (フトダマノブカ)", shrine: "工芸の社", history: "古代の建築や麻の織物を支えた、職人集団の技術力の神威。", benefit: "職人技上達、建築安全" },
+        { id: "g94", type: "知恵", name: "市杵嶋姫命 (イチキシマヒメノミコト)", shrine: "厳島神社（広島）", history: "宗像三女神の一柱。美しく聡明で、のちに弁財天と習合し芸事を司る。", benefit: "芸能上達、金運、海上安全" },
+        { id: "g95", type: "知恵", name: "天御鳥命 (アメノミトリノカミ)", shrine: "機織の社", history: "古代の衣服を織り成す技術を伝えた、アパレル・服飾の祖神。", benefit: "服飾デザイン上達、織物繁盛" },
+        { id: "g96", type: "知恵", name: "櫛明玉命 (クシアカルタマ)", shrine: "出雲の玉作社", history: "光り輝く美しい美玉を作り出した、美意識とクリエイティブの神。", benefit: "芸術センス向上、美意識洗練" },
+        { id: "g97", type: "知恵", name: "八意思兼 (ヤゴコロオモイカネ)", shrine: "オモイカネの別名", history: "多くの立場から多角的に物事を考え、最善の最適解を導く知恵の神。", benefit: "受験合格、アイデア創出" },
+        { id: "g98", type: "知恵", name: "住吉三神の知恵 (スミヨシサンシン)", shrine: "住吉大社（大阪）", history: "航海における星の読み方、和歌の道を人々に授けた文化の神威。", benefit: "和歌上達、進路明示" },
+        { id: "g99", type: "知恵", name: "建葉槌命 (タケハヅチノカミ)", shrine: "大甕神社（茨城）", history: "織物の技術をもって、暴れる星の神を穏やかに服従させた知恵の神。", benefit: "織物業繁盛、悪神退散" },
+        { id: "g100", type: "知恵", name: "八百万の知恵 (ヤオヨロズ)", shrine: "全国の神社", history: "すべての神々が集まり、対話と議論を重ねて平和を作る調和の知恵。", benefit: "会議円滑、人間関係調和、チームワーク"
     ];
 
-    let currentBookPage = 0; // 図鑑の現在のページインデックス (0〜24)
-
-    function getRandomElement(arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
-    }
+    let currentBookPage = 0; // 図鑑の現在のページインデックス (0〜99)
+    let currentIndexCategory = '皇祖'; // 索引画面の現在の選択属性
 
     function playOmikuji() {
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('resultContainer').style.display = 'none';
         document.getElementById('calendarContainer').style.display = 'none';
         document.getElementById('godListContainer').style.display = 'none';
+        document.getElementById('indexContainer').style.display = 'none';
         document.getElementById('resultContainer').classList.remove('paper-open');
         document.getElementById('animationArea').style.display = 'block';
         document.getElementById('godNewBadge').style.display = 'none';
         
         const box = document.getElementById('omikujiBox');
         const stick = document.getElementById('omikujiStick');
-        
         box.classList.remove('shake-animation');
         stick.classList.remove('pop-stick');
         void box.offsetWidth; 
-        
         box.classList.add('shake-animation');
 
         setTimeout(() => {
@@ -746,20 +917,19 @@
             const now = new Date();
             const storageKey = `stamp-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
             localStorage.setItem(storageKey, 'true');
-            
         }, 1300);
     }
 
     function showCalendarAndStamp() {
         document.getElementById('resultContainer').style.display = 'none';
         document.getElementById('godListContainer').style.display = 'none';
+        document.getElementById('indexContainer').style.display = 'none';
         document.getElementById('calendarContainer').style.display = 'block';
 
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth();
         const todayIdx = now.getDate();
-
         const reiwaYear = year - 2018;
         document.getElementById('calendarMonthTitle').textContent = `令和${reiwaYear}年${month + 1}月 参拝記録`;
 
@@ -809,7 +979,7 @@
         }, 300);
     }
 
-    // 🏛️ 見開き本形式で神様を表示する関数
+    // 📖 見開き頁の更新表示
     function updateBookPage() {
         const grid = document.getElementById('bookPageContent');
         grid.innerHTML = '';
@@ -822,6 +992,7 @@
             card.className = 'god-book-card';
             card.innerHTML = `
                 <div class="book-god-name">⛩️ ${god.name}</div>
+                <div class="book-item"><span class="book-label">【属性】</span><span class="book-value">${god.type}・八百万神</span></div>
                 <div class="book-item"><span class="book-label">【主な神社】</span><span class="book-value">${god.shrine}</span></div>
                 <div class="book-item"><span class="book-label">【由緒功績】</span><span class="book-value">${god.history}</span></div>
                 <div class="book-item"><span class="book-label">【御利益】</span><span class="book-value"><strong>${god.benefit}</strong></span></div>
@@ -831,12 +1002,13 @@
             card.innerHTML = `
                 <div style="font-size: 50px; margin-bottom: 10px; color: #a8a089;">？</div>
                 <div class="book-god-name" style="border:none; color:#777;">？？ ？？ ？？</div>
-                <div style="font-size: 12px; color:#999; padding: 0 10px;">（まだご縁が結ばれていません。<br>日々の参拝おみくじで出会うと解放されます）</div>
+                <div style="font-size: 11px; color:#999; padding: 0 5px; line-height:1.4;">
+                    （まだご縁が結ばれていません。<br>おみくじで出会うと、第 ${currentBookPage + 1} 頁の由緒が解放されます）
+                </div>
             `;
         }
         grid.appendChild(card);
 
-        // ページネーション表示更新
         document.getElementById('pageNumDisplay').textContent = `第 ${currentBookPage + 1} 頁 / 全 ${godData.length} 頁`;
         document.getElementById('prevPageBtn').disabled = (currentBookPage === 0);
         document.getElementById('nextPageBtn').disabled = (currentBookPage === godData.length - 1);
@@ -844,28 +1016,71 @@
 
     function generateGodList() {
         document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('indexContainer').style.display = 'none';
         document.getElementById('godListContainer').style.display = 'block';
 
-        // 解放された神様の総数をカウント
         let unlockedCount = 0;
         godData.forEach(god => {
             if (localStorage.getItem(`god-${god.id}`) === 'true') unlockedCount++;
         });
         document.getElementById('godCounter').textContent = `ご縁を結んだ神様: ${unlockedCount} / ${godData.length}`;
 
-        // 最初のページを表示
-        currentBookPage = 0;
         updateBookPage();
     }
 
-    // ページめくりボタンのイベント
+    // 🗂️ 属性別索引（インデックス）を表示・生成する関数
+    function showIndexScreen() {
+        document.getElementById('godListContainer').style.display = 'none';
+        document.getElementById('indexContainer').style.display = 'block';
+        filterIndex(currentIndexCategory);
+    }
+
+    function filterIndex(category) {
+        currentIndexCategory = category;
+        
+        // タブの活動状態切り替え
+        const tabs = document.querySelectorAll('#indexTabs .tab-btn');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const grid = document.getElementById('indexGrid');
+        grid.innerHTML = '';
+
+        // 全100柱から、指定された属性の神様のみをフィルタリング抽出
+        godData.forEach((god, index) => {
+            if (god.type === category) {
+                const isUnlocked = localStorage.getItem(`god-${god.id}`) === 'true';
+                const item = document.createElement('div');
+                
+                if (isUnlocked) {
+                    item.className = 'index-item';
+                    item.innerHTML = `
+                        <span>第 ${index + 1} 頁：${god.name.split(' (')[0]}</span>
+                        <span class="index-go-mark">開く ➔</span>
+                    `;
+                    // 🌟 索引タップ時に該当ページへ一発ワープするイベントを追加
+                    item.addEventListener('click', () => {
+                        currentBookPage = index;
+                        document.getElementById('indexContainer').style.display = 'none';
+                        document.getElementById('godListContainer').style.display = 'block';
+                        updateBookPage();
+                    });
+                } else {
+                    item.className = 'index-item locked-item';
+                    item.innerHTML = `<span>第 ${index + 1} 頁：？？？？ （未解放）</span>`;
+                }
+                grid.appendChild(item);
+            }
+        });
+    }
+
+    // ページめくり処理
     document.getElementById('prevPageBtn').addEventListener('click', () => {
         if (currentBookPage > 0) {
             currentBookPage--;
             updateBookPage();
         }
     });
-
     document.getElementById('nextPageBtn').addEventListener('click', () => {
         if (currentBookPage < godData.length - 1) {
             currentBookPage++;
@@ -873,17 +1088,22 @@
         }
     });
 
+    // 画面遷移イベント
     document.getElementById('startBtn').addEventListener('click', playOmikuji);
     document.getElementById('retryBtn').addEventListener('click', playOmikuji);
     document.getElementById('endBtn').addEventListener('click', showCalendarAndStamp);
-    
     document.getElementById('toGodListBtn').addEventListener('click', generateGodList);
     document.getElementById('backToCalendarBtn').addEventListener('click', showCalendarAndStamp);
-    
+    document.getElementById('toIndexBtn').addEventListener('click', showIndexScreen);
+    document.getElementById('backToBookBtn').addEventListener('click', generateGodList);
     document.getElementById('backToStartBtn').addEventListener('click', function() {
         document.getElementById('calendarContainer').style.display = 'none';
         document.getElementById('startScreen').style.display = 'block';
     });
+
+    function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
 </script>
 
 </body>
