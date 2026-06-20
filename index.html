@@ -1,553 +1,890 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>極・開運おみくじ</title>
-  <style>
-    /* デザインシステム定義（伝統的日本建築・神社の色彩を再現） */
-    :root {
-      --primary-red: #e60012; /* 朱色 */
-      --deep-red: #8c0000;
-      --gold: #d4af37;
-      --charcoal: #2b2b2b;
-      --soft-white: #fcfaf2; /* しっくい色 */
-      --shadow-color: rgba(0, 0, 0, 0.15);
-    }
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豪華絢爛・参拝おみくじ</title>
+    <style>
+        body {
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            background-color: #f2ebd9;
+            background-image: radial-gradient(#e6dabe 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        .omikuji-card {
+            background: #fcfaf2;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(139, 0, 0, 0.15);
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+            border: 4px double #8a1717;
+            position: relative;
+        }
 
-    body {
-      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-      background-color: var(--soft-white);
-      color: var(--charcoal);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+        h1 {
+            color: #8a1717;
+            margin-top: 0;
+            font-size: 21px;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            word-break: keep-all;
+            border-bottom: 1px solid #d4af37;
+            padding-bottom: 10px;
+        }
 
-    /* メインコンテナ */
-   .app-container {
-      background: #ffffff;
-      border: 8px double var(--deep-red);
-      border-radius: 12px;
-      width: 100%;
-      max-width: 500px;
-      padding: 30px 20px;
-      box-shadow: 0 10px 30px var(--shadow-color);
-      text-align: center;
-      position: relative;
-    }
+        .button-container {
+            margin: 25px 0 15px 0;
+            position: relative;
+        }
 
-    /* ヘッダーデザイン */
-   .header {
-      margin-bottom: 30px;
-      border-bottom: 2px dashed var(--gold);
-      padding-bottom: 15px;
-    }
+        .arrow {
+            font-size: 24px;
+            color: #8a1717;
+            animation: bounce 1s infinite;
+            margin-bottom: 5px;
+        }
 
-   .header h1 {
-      font-size: 24px;
-      color: var(--deep-red);
-      letter-spacing: 0.2em;
-      margin-bottom: 5px;
-    }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
 
-   .header p {
-      font-size: 12px;
-      color: #666;
-    }
+        .red-btn {
+            background: linear-gradient(135deg, #bc2424, #8a1717);
+            color: #fffde8;
+            border: 2px solid #d4af37;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(138, 23, 23, 0.4);
+            transition: all 0.2s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
 
-    /* メイン表示エリア */
-   .display-area {
-      min-height: 160px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 35px;
-      padding: 15px;
-      border-radius: 8px;
-      background: #faf8f5;
-      border: 1px solid #eee;
-    }
+        .red-btn:hover {
+            background: linear-gradient(135deg, #d32f2f, #a11b1b);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(138, 23, 23, 0.5);
+        }
 
-    /* おみくじ結果表示 */
-   .fortune-result {
-      font-size: 48px;
-      font-weight: 900;
-      color: var(--primary-red);
-      letter-spacing: 0.1em;
-      margin-bottom: 15px;
-      transform: scale(0);
-      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+        .end-btn {
+            background-color: #f0e6d2;
+            color: #5c4b37;
+            border: 1px solid #c2b49a;
+            padding: 10px 25px;
+            font-size: 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .end-btn:hover {
+            background-color: #e4d7be;
+        }
 
-   .fortune-result.show {
-      transform: scale(1);
-    }
+        .sub-btn {
+            background-color: #8a1717;
+            color: #fffde8;
+            border: 1px solid #d4af37;
+            padding: 8px 18px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .sub-btn:hover {
+            background-color: #bc2424;
+        }
 
-    /* プレースホルダー（初期状態のテキスト） */
-   .placeholder-text {
-      color: #888;
-      font-size: 16px;
-      line-height: 1.6;
-    }
+        /* --- おみくじ箱 --- */
+        .animation-area {
+            display: none;
+            position: relative;
+            height: 220px;
+            margin: 20px 0;
+        }
 
-    /* カテゴリ詳細リスト */
-   .category-list {
-      width: 100%;
-      display: none;
-      text-align: left;
-      margin-top: 15px;
-    }
+        .omikuji-box {
+            width: 75px;
+            height: 160px;
+            background: linear-gradient(90deg, #96662d, #d7a15c 30%, #f3d4a0 50%, #d7a15c 70%, #784e1b);
+            margin: 0 auto;
+            position: relative;
+            border-radius: 2px;
+            box-shadow: 5px 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-   .category-list.show {
-      display: block;
-      animation: fadeIn 0.8s ease forwards;
-    }
+        .omikuji-box::before, .omikuji-box::after {
+            content: '';
+            position: absolute;
+            left: 0; width: 100%; height: 10px;
+            background: linear-gradient(90deg, #aa7c11, #e5b93b, #fdefaa, #b38616);
+            border-top: 1px solid #fdefaa;
+            border-bottom: 1px solid #805c04;
+            box-sizing: border-box;
+        }
+        .omikuji-box::before { top: 0; }
+        .omikuji-box::after { bottom: 0; }
 
-   .category-item {
-      background: #ffffff;
-      border-left: 4px solid var(--gold);
-      padding: 10px 15px;
-      margin-bottom: 10px;
-      border-radius: 0 6px 6px 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+        .box-title {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            color: #222;
+            font-weight: bold;
+            font-size: 15px;
+            letter-spacing: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 10px 4px;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
 
-   .category-name {
-      font-weight: bold;
-      font-size: 14px;
-      color: var(--deep-red);
-      margin-bottom: 3px;
-    }
+        .shake-animation {
+            animation: shake 0.7s ease-in-out infinite;
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            20% { transform: rotate(20deg) translateY(-12px); }
+            40% { transform: rotate(-20deg) translateY(6px); }
+            60% { transform: rotate(15deg) translateY(-6px); }
+            80% { transform: rotate(-15deg) translateY(3px); }
+        }
 
-   .category-text {
-      font-size: 13px;
-      color: #444;
-      line-height: 1.5;
-    }
+        .omikuji-stick {
+            position: absolute;
+            bottom: 100%; left: 50%;
+            transform: translateX(-50%);
+            width: 14px; height: 0px;
+            background: linear-gradient(90deg, #e3cfa1, #fffde8);
+            border: 1px solid #b5945b;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            transition: height 0.4s ease-out 0.7s;
+            z-index: -1;
+        }
+        .pop-stick { height: 90px; }
 
-    /* 矢印付き赤い操作ボタン領域 */
-   .action-container {
-      position: relative;
-      margin-top: 20px;
-      display: inline-block;
-      width: 100%;
-    }
+        /* --- おみくじ結果 --- */
+        .result-container {
+            display: none;
+            margin-top: 25px;
+            background: linear-gradient(to bottom, #fffef7 0%, #f4f0e1 33%, #fffef7 34%, #f4f0e1 66%, #fffef7 67%, #fffef7 100%);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 0 20px rgba(0,0,0,0.05);
+            padding: 30px 20px;
+            position: relative;
+            transform: scaleY(0);
+            transform-origin: top;
+            border: 3px solid #8a1717;
+        }
 
-    /* 動的フローティング矢印（ボタンへの視線誘導） */
-   .floating-arrow {
-      position: absolute;
-      top: -45px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 24px;
-      color: var(--primary-red);
-      animation: bounce 1.2s infinite;
-      pointer-events: none;
-    }
+        .result-container::after {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1px solid #d4af37;
+            pointer-events: none;
+        }
 
-    /* おみくじを引くボタン（朱色） */
-   .btn-draw {
-      background-color: var(--primary-red);
-      color: #ffffff;
-      border: none;
-      border-bottom: 4px solid var(--deep-red);
-      border-radius: 50px;
-      width: 85%;
-      max-width: 320px;
-      padding: 16px 30px;
-      font-size: 18px;
-      font-weight: bold;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      outline: none;
-      box-shadow: 0 4px 10px rgba(230, 0, 18, 0.3);
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .paper-open { animation: openPaper 0.6s forwards ease-out; }
+        @keyframes openPaper {
+            0% { transform: scaleY(0); opacity: 0; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
 
-    /* ボタン内の内蔵矢印 */
-   .btn-draw.inner-arrow {
-      margin-left: 10px;
-      font-size: 20px;
-      transition: transform 0.2s ease;
-    }
+        .fortune-result {
+            font-size: 38px;
+            font-weight: bold;
+            color: #8a1717;
+            margin: 0 0 20px 0;
+            letter-spacing: 8px;
+            border-bottom: 3px double #d4af37;
+            display: inline-block;
+            padding: 0 20px 5px 20px;
+            text-shadow: 1px 1px 0px #fff;
+        }
 
-   .btn-draw:hover {
-      background-color: #ff1a2b;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(230, 0, 18, 0.4);
-    }
+        .comment-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .comment-table tr { border-bottom: 1px dashed #dcd1ba; }
+        .comment-table tr:last-child { border-bottom: none; }
+        .category-name {
+            font-weight: bold;
+            color: #8a1717;
+            padding: 12px 5px;
+            width: 75px;
+            vertical-align: top;
+        }
+        .category-text {
+            padding: 12px 10px;
+            color: #222;
+            font-size: 14px;
+            line-height: 1.6;
+        }
 
-   .btn-draw:hover.inner-arrow {
-      transform: translateX(4px);
-    }
+        .god-separator {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, transparent, #d4af37, transparent);
+            margin: 40px 0 25px 0;
+        }
+        .god-box {
+            text-align: left;
+            padding: 10px 5px 20px 5px;
+        }
+        .god-title {
+            font-size: 13px;
+            color: #8a1717;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .god-new-badge {
+            display: none;
+            color: #bc2424;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 10px;
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(0.95); opacity: 0.8; }
+            to { transform: scale(1.05); opacity: 1; }
+        }
+        .god-name {
+            font-size: 20px;
+            color: #222;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+        .god-item {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .god-label {
+            font-weight: bold;
+            color: #8a1717;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed #c2b49a;
+            padding-bottom: 3px;
+        }
+        .god-value {
+            font-size: 14px;
+            color: #333;
+            padding-left: 2px;
+            display: block;
+        }
 
-   .btn-draw:active {
-      transform: translateY(2px);
-      border-bottom-width: 1px;
-      box-shadow: 0 2px 5px rgba(230, 0, 18, 0.2);
-    }
+        /* --- 参拝記録カレンダー --- */
+        .calendar-container {
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
 
-    /* ロード・シャッフルアニメーション */
-   .shuffling {
-      animation: shake 0.3s infinite;
-    }
+        .calendar-title {
+            font-size: 18px;
+            color: #5c4b37;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
 
-    /* 各種アニメーションキーフレーム */
-    @keyframes bounce {
-      0%, 100% {
-        transform: translate(-50%, 0);
-      }
-      50% {
-        transform: translate(-50%, -10px);
-      }
-    }
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #c2b49a;
+        }
+        .calendar-table th, .calendar-table td {
+            border: 1px solid #e2dacb;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 14px;
+            position: relative;
+            width: 14.28%;
+        }
+        .calendar-table th {
+            background-color: #f7f3eb;
+            color: #5c4b37;
+        }
+        .calendar-table td { height: 45px; box-sizing: border-box; }
+        
+        .sunday-text { color: #bc2424 !important; }
+        .today-cell {
+            background-color: #fffde8;
+            font-weight: bold;
+            outline: 2px solid #d4af37;
+            outline-offset: -2px;
+        }
 
-    @keyframes shake {
-      0% { transform: translate(1px, 1px) rotate(0deg); }
-      10% { transform: translate(-1px, -2px) rotate(-1deg); }
-      20% { transform: translate(-3px, 0px) rotate(1deg); }
-      30% { transform: translate(0px, 2px) rotate(0deg); }
-      40% { transform: translate(1px, -1px) rotate(1deg); }
-      50% { transform: translate(-1px, 2px) rotate(-1deg); }
-      60% { transform: translate(-3px, 1px) rotate(0deg); }
-      70% { transform: translate(2px, 1px) rotate(-1deg); }
-      80% { transform: translate(-1px, -1px) rotate(1deg); }
-      90% { transform: translate(2px, 2px) rotate(0deg); }
-      100% { transform: translate(1px, -2px) rotate(-1deg); }
-    }
+        .stamp-done {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 32px; height: 32px;
+            border: 2px solid #bc2424;
+            color: #bc2424;
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 28px;
+            text-align: center;
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0;
+            user-select: none;
+            background: rgba(255,255,255,0.8);
+            box-sizing: border-box;
+        }
+        .stamp-animation {
+            animation: stampPunch 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes stampPunch {
+            0% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+            80% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.9; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(-15deg); opacity: 0.85; }
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+        /* --- 🏛️ 新設：見開き和風図鑑UIデザイン --- */
+        .god-list-container {
+            display: none;
+            margin-top: 25px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .god-list-title {
+            font-size: 18px;
+            color: #8a1717;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+        .god-counter {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        /* 和書の見開きを表現したブック型コンテナ */
+        .book-layout {
+            background: #f4eee1;
+            border: 3px solid #63431a;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 20px 15px;
+            position: relative;
+            min-height: 380px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        /* 本の中央の折り目線 */
+        .book-layout::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 2px;
+            background: linear-gradient(to right, rgba(0,0,0,0.15), rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.15));
+            pointer-events: none;
+        }
+
+        /* 左右ページに分けたレイアウト（1枚に贅沢に1柱） */
+        .book-page-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            min-height: 340px;
+        }
+
+        .god-book-card {
+            background: #fffdf9;
+            border: 1px solid #d4af37;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: inset 0 0 15px rgba(212,175,55,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .god-book-card.locked-page {
+            background: #e6e2d5;
+            border: 1px dashed #a8a089;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #777;
+        }
+
+        .book-god-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #8a1717;
+            border-bottom: 2px double #d4af37;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .book-item {
+            margin-bottom: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .book-label {
+            font-weight: bold;
+            color: #8a1717;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .book-value {
+            color: #333;
+            display: block;
+            padding-left: 2px;
+        }
+
+        /* ページめくり操作パネル */
+        .page-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .page-num {
+            font-size: 13px;
+            color: #5c4b37;
+            font-weight: bold;
+        }
+        .page-btn {
+            background: #63431a;
+            color: #fffde8;
+            border: 1px solid #d4af37;
+            padding: 5px 15px;
+            font-size: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .page-btn:disabled {
+            background: #ccc;
+            border-color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <div class="header">
-      <h1>極・開運御籤</h1>
-      <p>心を落ち着かせ、ボタンを押しておみくじをお引きください</p>
+<div class="omikuji-card">
+    <!-- 最初画面 -->
+    <div id="startScreen">
+        <h1>✨ 参拝開運御神籤 ✨</h1>
+        <p>心を落ち着かせ、おみくじをお引きください</p>
+        <div class="button-container">
+            <div class="arrow">⬇</div>
+            <button class="red-btn" id="startBtn">おみくじを引く</button>
+        </div>
     </div>
 
-    <div id="displayArea" class="display-area">
-      <div id="placeholderText" class="placeholder-text">
-        神社の神聖な気が満ちています。<br>下の赤いボタンを押して運勢を占ってください。
-      </div>
-      <div id="fortuneResult" class="fortune-result">大吉</div>
+    <!-- アニメーションエリア -->
+    <div class="animation-area" id="animationArea">
+        <div class="omikuji-box" id="omikujiBox">
+            <div class="box-title">御神籤</div>
+            <div class="omikuji-stick" id="omikujiStick"></div>
+        </div>
     </div>
 
-    <div id="categoryList" class="category-list">
-      <div class="category-item">
-        <div class="category-name">👔 仕事運</div>
-        <div id="commentWork" class="category-text"></div>
-      </div>
-      <div class="category-item">
-        <div class="category-name">💖 恋愛運</div>
-        <div id="commentLove" class="category-text"></div>
-      </div>
-      <div class="category-item">
-        <div class="category-name">✍ 勉学運</div>
-        <div id="commentStudy" class="category-text"></div>
-      </div>
-      <div class="category-item">
-        <div class="category-name">💍 結婚運</div>
-        <div id="commentMarriage" class="category-text"></div>
-      </div>
-      <div class="category-item">
-        <div class="category-name">🏡 転居運</div>
-        <div id="commentRelocation" class="category-text"></div>
-      </div>
+    <!-- おみくじ結果画面 -->
+    <div class="result-container" id="resultContainer">
+        <div style="font-size: 14px; color: #666;">謹んで運勢をお送りいたします</div>
+        <div class="fortune-result" id="fortuneResult">-</div>
+
+        <table class="comment-table">
+            <tr><td class="category-name">💼 仕事</td><td class="category-text" id="jobComment"></td></tr>
+            <tr><td class="category-name">❤️ 恋愛</td><td class="category-text" id="loveComment"></td></tr>
+            <tr><td class="category-name">✏️ 勉学</td><td class="category-text" id="studyComment"></td></tr>
+            <tr><td class="category-name">💍 結婚</td><td class="category-text" id="marriageComment"></td></tr>
+            <tr><td class="category-name">📦 転居</td><td class="category-text" id="moveComment"></td></tr>
+        </table>
+
+        <!-- 本日縁のある神様 -->
+        <hr class="god-separator">
+        <div class="god-box">
+            <div class="god-new-badge" id="godNewBadge">✨ 初お目見え！名鑑に登録されました ✨</div>
+            <div class="god-title">━ 本日あなたと縁のある神様 ━</div>
+            <div class="god-name" id="godName">-</div>
+            
+            <div class="god-item">
+                <span class="god-label">⛩️ 主な神社（二社）</span>
+                <span class="god-value" id="godShrine">-</span>
+            </div>
+            
+            <div class="god-item">
+                <span class="god-label">📜 経歴・功績</span>
+                <span class="god-value" id="godHistory">-</span>
+            </div>
+            
+            <div class="god-item">
+                <span class="god-label">✨ ご利益</span>
+                <span class="god-value" id="godBenefit">-</span>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <div class="arrow">⬇</div>
+            <button class="red-btn" id="retryBtn">もう一度引く</button>
+        </div>
+        <div>
+            <button class="end-btn" id="endBtn">終了する</button>
+        </div>
     </div>
 
-    <div class="action-container">
-      <div class="floating-arrow" id="floatingArrow">👇</div>
-      <button id="btnDraw" class="btn-draw" aria-label="おみくじを引く">
-        おみくじを引く <span class="inner-arrow">➔</span>
-      </button>
+    <!-- カレンダー参拝記録画面 -->
+    <div class="calendar-container" id="calendarContainer">
+        <div class="calendar-title" id="calendarMonthTitle">令和○年○月 参拝記録</div>
+        <div>
+            <button class="sub-btn" id="toGodListBtn">⛩️ 神様名鑑を見る</button>
+        </div>
+        <table class="calendar-table" style="margin-top: 15px;">
+            <thead>
+                <tr>
+                    <th style="color:#e53935;">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th style="color:#1e88e5;">土</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody">
+            </tbody>
+        </table>
+        <button class="end-btn" id="backToStartBtn">最初の画面に戻る</button>
     </div>
-  </div>
 
-  <script>
-    /**
-     * 1. ライフサイクル管理
-     * DOMContentLoadedイベントリスナーにより、すべてのDOMがメモリ上に完全に展開された後に実行を保証。
-     * これにより、初期スクリプト実行によるDOM取得エラー（Null Pointer Exception）を物理的に排除する。
-     */
-    window.addEventListener('DOMContentLoaded', function() {
-      
-      // 2. DOM要素の厳密な参照確保
-      const btnDraw = document.getElementById('btnDraw');
-      const displayArea = document.getElementById('displayArea');
-      const placeholderText = document.getElementById('placeholderText');
-      const fortuneResult = document.getElementById('fortuneResult');
-      const categoryList = document.getElementById('categoryList');
-      const floatingArrow = document.getElementById('floatingArrow');
+    <!-- 新・神様名鑑（見開き図鑑）画面 -->
+    <div class="god-list-container" id="godListContainer">
+        <div class="god-list-title">⛩️ 御神体・神様名鑑</div>
+        <div class="god-counter" id="godCounter">ご縁を結んだ神様: 0 / 25</div>
+        
+        <!-- 見開き和書レイアウト -->
+        <div class="book-layout">
+            <div class="book-page-content" id="bookPageContent">
+                <!-- JavaScriptでここに1ページ分の神様を出力 -->
+            </div>
+        </div>
 
-      const commentWork = document.getElementById('commentWork');
-      const commentLove = document.getElementById('commentLove');
-      const commentStudy = document.getElementById('commentStudy');
-      const commentMarriage = document.getElementById('commentMarriage');
-      const commentRelocation = document.getElementById('commentRelocation');
+        <!-- ページめくりコントロール -->
+        <div class="page-controls">
+            <button class="page-btn" id="prevPageBtn">◀ 前の頁</button>
+            <span class="page-num" id="pageNumDisplay">第 1 頁 / 全 25 頁</span>
+            <button class="page-btn" id="nextPageBtn">次の頁 ▶</button>
+        </div>
 
-      // 取得失敗時のセーフティガード（万一のマークアップ改変時のフリーズ防止）
-      if (!btnDraw ||!displayArea ||!fortuneResult ||!categoryList) {
-        console.error("致命的な初期化エラー: 必須のDOM要素が見つかりません。");
-        return;
-      }
+        <div style="text-align: center; margin-top: 25px;">
+            <button class="sub-btn" id="backToCalendarBtn">📅 参拝記録に戻る</button>
+        </div>
+    </div>
+</div>
 
-      /**
-       * 3. おみくじの確率設定と多次元テキストプール
-       * 各運勢にそれぞれ紐づく、カテゴリごとの複数コメント候補群を構造化して定義する。
-       * 運勢によって自動的にプールが決定され、その中からさらに確率的に1つがランダム選択される。
-       */
-      const fortuneDatabase = {
+<script>
+    const fortunes = ['大吉', '中吉', '小吉', '吉', '末吉', '凶'];
+
+    const comments = {
         '大吉': {
-          color: '#e60012',
-          comments: {
-            work: [
-              'これまでの努力が最上の形で実を結びます。重要な決断を下すのに最良の好機です。',
-              '直感と判断力が極限まで冴え渡ります。発案したアイデアが周囲に大絶賛されるでしょう。'
-            ],
-            love: [
-              '運命的な出会いが目前に迫っています。自ら心を開くことで最高の縁が繋がります。',
-              '理想以上の相手との親密な関係が急速に深まります。自信を持って進んでください。'
-            ],
-            study: [
-              '知識の吸収力が驚異的なレベルに達しています。難関資格への挑戦も合格の兆しです。',
-              '長年の疑問が氷解し、真理に近づけます。自分の可能性を信じて学習を続けましょう。'
-            ],
-            marriage: [
-              '具体的な婚約や結婚の話がトントン拍子に進みます。生涯最高の幸福に包まれるでしょう。',
-              'お互いの信頼が揺るぎない確信に変わります。周囲からの大いなる祝福に恵まれます。'
-            ],
-            relocation: [
-              '東または南方向への転居に大いなる吉兆があります。新天地が運気をさらに跳ね上げます。',
-              '理想とする住環境に巡り会う好機です。迷わず決断を下すことで福を招きます。'
-            ]
-          }
+            job: ['これまでの努力が実を結び、大出世の兆し！', '新しい企画が次々と通る最高の運気です。'],
+            love: ['理想以上の相手との素晴らしい出会いがあるかも。', '恋人との絆が最高潮に深まる時期です。'],
+            study: ['集中力が研ぎ澄まされ、難関試験も突破の気配。', '努力した分だけ結果が出る、最高の学習期！'],
+            marriage: ['具体的な話がトントン拍子に進むでしょう。', '運命の赤い糸を手繰り寄せる瞬間が近づいています。'],
+            move: ['南か東への転居に大吉あり。良い物件が見つかる。', '今が引っ越しのベストタイミングです。']
         },
         '中吉': {
-          color: '#ff5c00',
-          comments: {
-            work: [
-              '着実な進捗が見込めます。周囲の支援を受けることで、より大きな目標をクリアできます。',
-              'リーダーシップを発揮することで信頼が高まります。協調性を重んじるのが成功の道です。'
-            ],
-            love: [
-              '友人関係から恋人へと発展する兆しがあります。ゆっくりと時間をかけて育みましょう。',
-              '気遣いと感謝の言葉が相手の心を打ちます。小さなサプライズが関係を前進させます。'
-            ],
-            study: [
-              '日々の計画的な学習が効果を生みます。怠け心を捨て、毎日のルーティンを守るべし。',
-              '苦手分野の克服に明るい兆しが見えます。基礎を今一度徹底的に復習してください。'
-            ],
-            marriage: [
-              '双方の家族からの後押しが得られやすい時期です。具体的な将来設計を描きましょう。',
-              '焦らず歩調を合わせることで、おのずと最良の選択肢とタイミングが浮き彫りになります。'
-            ],
-            relocation: [
-              '利便性の高い場所への引っ越しが吉。生活習慣を改善させるための転居に最適です。',
-              '急な転居計画でもスムーズに運ぶ運気です。まずは複数の不動産情報を見比べましょう。'
-            ]
-          }
+            job: ['順調に成果を出せる。チームワークを大切に。', '上司からの評価が上がるチャンスが到来。'],
+            love: ['飾らない自然体な魅力が相手に伝わります。', '意外な身近な人物からアプローチの予感。'],
+            study: ['苦手分野を克服できるチャンス。復習を重点的に。', '計画通りに進めれば良い結果が残せます。'],
+            marriage: ['焦らずじっくり関係を深めるのが吉。', '周囲の応援を得て前進するでしょう。'],
+            move: ['焦らず探せば、希望に近い場所が見つかります。', '部屋の模様替えだけでも運気がアップします。']
         },
         '小吉': {
-          color: '#d4af37',
-          comments: {
-            work: [
-              '大きなトラブルはなく、安定した平穏な環境が続きます。スキルアップの土台を作れます。',
-              '目の前の日常業務に集中することで、将来への確固たるアドバンテージを構築できます。'
-            ],
-            love: [
-              '相手の何気ない一面に魅力を見出す機会があります。自然体で接するのが吉です。',
-              '穏やかで穏和な対話が好感度を高めます。奇をてらわず普段通りのあなたで。'
-            ],
-            study: [
-              '小さな発見が学習意欲を刺激します。学んだことを誰かに教えることで知識が定着します。',
-              '図書館などの静かな環境での自習がはかどります。気が散る端末は片付けましょう。'
-            ],
-            marriage: [
-              '互いの趣味や価値観についての理解が深まります。焦る必要はありません。',
-              '小さなステップを一つずつクリアしていく段階です。二人の対話時間を増やしましょう。'
-            ],
-            relocation: [
-              '自然豊かな場所や公園の近くへの移動が運気を回復させます。周囲の治安を要確認。',
-              '現在地の近くで、少し条件を良くした引っ越しが良い結果を招く暗示があります。'
-            ]
-          }
+            job: ['一歩一歩着実に進めることでミスを防げます。', '大きな変化はないが、安定した仕事ぶりを発揮。'],
+            love: ['小さな気配りが相手の心を動かすきっかけに。', '共通の趣味から会話が弾みそうです。'],
+            study: ['毎日少しずつの積み重ねが、後に大きな力になります。', '暗記系の科目にツキがあります。'],
+            marriage: ['家族への紹介など、内固めをするのに良い時期。', '小さな幸せを感じられる穏やかな進展あり。'],
+            move: ['現状維持も悪くないですが、近場への移動なら吉。', '住環境の掃除を徹底すると運気が上がります。']
         },
         '吉': {
-          color: '#2e7d32',
-          comments: {
-            work: [
-              '地道なルーティンワークが、予期せぬ局面で大きな武器となり評価を得るでしょう。',
-              '無理に新領域に手を出さず、現行業務の最適化とスピード向上に努めると吉。'
-            ],
-            love: [
-              '聞き手に回ることで好感度が急上昇します。相手の本音を丁寧に聞いてあげましょう。',
-              '共通の趣味を持つグループ活動の中に、新しい親交の芽が隠されています。'
-            ],
-            study: [
-              '暗記系科目の習得に最適な時期です。朝の時間を活用して学習効率を上げましょう。',
-              '努力した分だけ結果に反映されます。裏を返せば、サボるとその分だけ後退します。'
-            ],
-            marriage: [
-              '現実的な生活設計について語り合うのに適した日です。誠実さが実を結びます。',
-              '互いの将来の希望が明確になり、少しずつ具体的な輪郭を持ち始めます。'
-            ],
-            relocation: [
-              '実家の方向やなじみのある地域への移転に吉あり。安心感を得られる場所が最適です。',
-              '転居そのものは良い変化を生みますが、契約書類の細部だけは二重に確認しましょう。'
-            ]
-          }
+            job: ['平凡に見える業務の中に、成長のヒントがあります。', '我慢強く取り組めば、午後から運気が上向きます。'],
+            love: ['まずは友達関係から。少しずつ距離を縮めて。', '聞き手に回ることで好感度がアップします。'],
+            study: ['応用よりも、まずは基礎をしっかり見直すこと。', '図書館など静かな場所での勉強がはかどります。'],
+            marriage: ['焦りは禁物。相手のペースを尊重しましょう。', 'お互いの価値観を話し合う良い機会です。'],
+            move: ['急な引越しは避け、まずは情報収集をしっかりと。', '時期を少しずらした方が好条件に出会えます。']
         },
         '末吉': {
-          color: '#757575',
-          comments: {
-            work: [
-              '最初は困難に見える仕事でも、後半から一気にペースを掴むことができます。忍耐の時。',
-              '単独行動よりもチームワークに徹するのが無難。先輩のノウハウを吸収しましょう。'
-            ],
-            love: [
-              '誤解が生じやすい時期ですが、真摯な言葉で早めに対処すればより深い関係になります。',
-              '過度な期待を抱かず、相手のありのままを受け入れる度量が試される時です。'
-            ],
-            study: [
-              '進捗が遅く感じられますが、ここで投げ出さない粘り強さが大きな実力差を生みます。',
-              '学習環境の整理整頓（デスク周りの片付け）を最初に行うと、集中力が劇的に回復します。'
-            ],
-            marriage: [
-              '焦って結論を出そうとすると衝突しがち。今は二人の共通の時間を増やすのみで十分です。',
-              '将来に関する不安要素は、一つずつ冷静に話し合って解消していくプロセスが重要。'
-            ],
-            relocation: [
-              '急いで転居を決める必要はありません。複数のエリアをじっくり下見しましょう。',
-              '初期費用や各種手数料の計算を厳密に行い、予算超過を防ぐことが肝要です。'
-            ]
-          }
+            job: ['今は下積みの時期。基礎を固めると後半に花開きます。', '焦って結果を求めず、周囲のサポートに徹して吉。'],
+            love: ['派手な進展はなくても、少しずつ信頼が深まります。', '相手の本音をじっくり聴く姿勢がカギ。'],
+            study: ['成果が出るまで時間がかかりますが、諦めずに継続を. 。', '基礎問題集を何度も解き直すのが吉。'],
+            marriage: ['小さな問題も放置せず、対話を重ねることで円満に。', '一歩ずつ着実に進めれば、やがて良い結着へ。'],
+            move: ['無理な移動は控え、現在の住居を整理整頓しましょう。', '下調べをいつもより念入りを行えば吉。']
         },
         '凶': {
-          color: '#333333',
-          comments: {
-            work: [
-              'ミスを防ぐために二重三重の確認を怠らないでください。報告を密にすることが防御策です。',
-              '独断での進行は非常に危険です。常に上司やチームの進捗と歩調を合わせてください。'
-            ],
-            love: [
-              '一時的な感情論での発言は、不要な亀裂を生みます。一度深呼吸してから言葉を発しましょう。',
-              '相手への過剰な干渉や束縛は、結果的に心の距離を遠ざける原因となります。'
-            ],
-            study: [
-              '集中力が散漫になりやすい時期。時間を細かく区切るポモドーロ勉強法を取り入れましょう。',
-              '基本をおろそかにしている可能性があります。応用を焦らず、基礎中の基礎に戻りましょう。'
-            ],
-            marriage: [
-              '他者の勝手な意見や外野の噂話に惑わされないように。二人の信頼関係の強さが試されます。',
-              '大きな決断は延期したほうが無難。まずは現状の課題を一つ一つ整理すること。'
-            ],
-            relocation: [
-              '現在の住宅設備の不調を修繕することが、転居を急ぐよりも先決となる暗示です。',
-              '怪しげな格安物件の誘い文句には裏があります。相場以下の条件には警戒してください。'
-            ]
-          }
+            job: ['ケアレスミスに注意。ダブルチェックを忘れずに。', '無理をせず、今日は定時で帰って体調を整えましょう。'],
+            love: ['言葉のすれ違いに注意。相手を思いやる発言を。', '今は自分磨きに集中すると、後で良い波が来ます。'],
+            study: ['集中力が途切れがち。適度な休憩を挟みましょう。', '難問にこだわらず、得意なところから手を付けて。'],
+            marriage: ['周囲の意見に惑わされず、二人の意思を尊重して。', '一歩引いて、冷静に将来を見つめ直すとき。'],
+            move: ['今は動くべき時ではありません。現在の住まいを快適に。', '物件を探すなら、条件を厳しめに見直して。']
         }
-      };
+    };
 
-      // 抽選確率用の配列化
-      const fortuneKeys = Object.keys(fortuneDatabase);
+    // 🏛️ 豪華・日本の神々25柱データ拡充
+    const godData = [
+        { id: "amaterasu", name: "天照大御神 (アマテラスオオミカミ)", shrine: "伊勢神宮（三重）、東京大神宮（東京）", history: "太陽を象徴する最高の女神であり日本の総氏神。岩戸隠れの神話で有名です。", benefit: "国家安泰、あらゆる開運招福、子孫繁栄" },
+        { id: "okuninushi", name: "大国主神 (オオクニヌシノカミ)", shrine: "出雲大社（島根）、大神神社（奈良）", history: "因幡の白兎を助けた国造りの中心神。数々の試練を乗り越え出雲を興しました。", benefit: "良縁成就（縁結び）、商売繁盛、五穀豊穣" },
+        { id: "susanoo", name: "須佐之男命 (スサノオノミコト)", shrine: "八坂神社（京都）、氷川神社（埼玉）", history: "天照大御神の弟。出雲に降り立ち、怪物を退治した気性の激しい英雄神です。", benefit: "厄除け、災難除け、学問上達、縁結び" },
+        { id: "izanagi", name: "伊邪那岐命 (イザナギノミコト)", shrine: "多賀大社（滋賀）、伊弉諾神宮（兵庫）", history: "日本の国土や偉大な神々を生み出した国生みの父。夫婦の契りの祖とされます。", benefit: "夫婦円満、延命長寿、事業成就" },
+        { id: "izanami", name: "伊邪那美命 (イザナミノミコト)", shrine: "伊弉册神社（兵庫）、白山比咩神社（石川）", history: "イザナギと共に日本列島を創った母神。後に黄泉の国を司る主宰神となります。", benefit: "子授かり、安産祈願、縁結び" },
+        { id: "jinmu", name: "神武天皇 (ジンムテンノウ)", shrine: "橿原神宮（奈良）、宮崎神宮（宮崎）", history: "日本の初代天皇。日向の地から数々の困難を乗り越え大和を平定し即位しました。", benefit: "必勝祈願、開運招福、延命長寿" },
+        { id: "konohana", name: "木花之佐久夜毘売 (コノハナノサクヤビメ)", shrine: "富士山本宮浅間大社（静岡）、霧島神宮（鹿児島）", history: "桜のように美しい女神。身の潔白を示すため炎の中で出産した強さも持ちます。", benefit: "安産・子宝、火災除け、良縁祈願" },
+        { id: "takemikazuchi", name: "建御雷神 (タケミカヅチノカミ)", shrine: "鹿島神宮（茨城）、春日大社（奈良）", history: "力比べで敵を圧倒し国譲りを成功させた最強の武神。相撲の起源とも言われます。", benefit: "武芸上達、勝負運上昇、旅行安全" },
+        { id: "ukanomitama", name: "宇迦之御魂神 (ウカノミタマノカミ)", shrine: "伏見稲荷大社（京都）、笠間稲荷神社（茨城）", history: "お米や食物を司る「お稲荷様」。全国で最も多く祀られ、暮らしを支えます。", benefit: "商売繁盛、五穀豊穣、家内安全" },
+        { id: "michizane", name: "菅原道真 (スガワラノミチザネ)", shrine: "太宰府天満宮（福岡）、北野天満宮（京都）", history: "類まれな学識を持つ平安の文官。その秀才ぶりから学問の神と称えられます。", benefit: "学業成就、試験合格、文芸上達" },
+        { id: "hondawake", name: "誉田別命 (ホンダワケノミコト)", shrine: "宇佐神宮（大分）、石清水八幡宮（京都）", history: "応神天皇の神霊であり「八幡様」。清和源氏をはじめ武家から熱く信仰されました。", benefit: "武運長久、勝負運、出世開運" },
+        { id: "oyamatsumi", name: "大山津見神 (オオヤマツミノカミ)", shrine: "大山祇神社（愛媛）、三島大社（静岡）", history: "全ての山林を支配する山の総大将。お酒造りの祖神としても知られます。", benefit: "山林守護、商売繁盛、金運上昇" },
+        { id: "sarutahiko", name: "猿田毘古神 (サルタヒコノカミ)", shrine: "椿大神社（三重）、猿田彦神社（三重）", history: "天孫降臨の道案内を務めた神。物事を良い方向へ導くみちひらきの神です。", benefit: "交通安全、物事の道開き、建築安全" },
+        { id: "sukunahikona", name: "少彦名神 (スクナヒコナノカミ)", shrine: "少彦名神社（大阪）、神田明神（東京）", history: "大国主神と協力した小さな知恵の神。医薬や温泉の文化を伝えました。", benefit: "病気平癒、身体健康、醸造安全" },
+        { id: "yamatotakeru", name: "日本武尊 (ヤマトタケルノミコト)", shrine: "大鳥大社（大阪）、熱田神宮（愛知）", history: "知略と武勇で日本中を平定した、神話時代屈指の悲劇の伝説的英雄です。", benefit: "開運出世、除災招福、国土安泰" },
+        // 🆕 追加：16柱〜25柱
+        { id: "ninigi", name: "瓊瓊杵尊 (ニニギノミコト)", shrine: "霧島神宮（鹿児島）、高千穂神社（宮崎）", history: "天照大御神の孫で、地上の国を治めるため三種の神器と共に高千穂へ降臨しました。", benefit: "国家安泰、五穀豊穣、家内安全" },
+        { id: "futsunonushi", name: "経津主神 (フツヌシノカミ)", shrine: "香取神宮（千葉）、春日大社（奈良）", history: "タケミカヅチと共に地上に降り立ち、不服な神々を屈服させた鋭い剣の武神です。", benefit: "武芸上達、勝負運、国家安泰" },
+        { id: "toyouke", name: "豊受大御神 (トヨウケノオオミカミ)", shrine: "伊勢神宮外宮（三重）", history: "天照大御神の食事を司るために呼ばれた、衣食住と産業全般を守護する大女神。", benefit: "衣食住守護、諸産業繁盛、開運" },
+        { id: "ameuzume", name: "天宇受売命 (アメノウズメノミコト)", shrine: "芸能神社（京都）、荒立神社（宮崎）", history: "岩戸隠れの際、見事な踊りで八百万の神々を大爆笑させ、岩戸を開く契機を作った芸能の祖。", benefit: "芸能上達、技芸上達、縁結び" },
+        { id: "tsukuyomi", name: "月読命 (ツクヨミノミコト)", shrine: "月読宮（三重）、月読神社（京都）", history: "イザナギの右目から生まれ、夜の国を支配することを託された神秘的な月の神です。", benefit: "海上安全、夜間守護、五穀豊穣" },
+        { id: "kotoshironushi", name: "事代主神 (コトシロヌシノカミ)", shrine: "美保神社（島根）、長田神社（兵庫）", history: "大国主神の息子。知恵深く、後に「えびす様」として漁業や商業の神となりました。", benefit: "大漁満足、商売繁盛、福徳円満" },
+        { id: "takenominakata", name: "建御名方神 (タケミナカタノカミ)", shrine: "諏訪大社（長野）", history: "国譲りに反対しタケミカヅチに挑んだ熱き神。諏訪の地を守る軍神、風の神です。", benefit: "武運長久、勝負運、五穀豊穣" },
+        { id: "ugayafukiaezu", name: "鵜葺草葺不合命 (ウガヤフキアエズ)", shrine: "鵜戸神宮（宮崎）", history: "産屋の茅葺が葺き合わぬうちに生まれた神。初代神武天皇の父親にあたります。", benefit: "夫婦和合、安産、海上安全" },
+        { id: "tamayorihime", name: "玉依姫命 (タマヨリヒメノミコト)", shrine: "賀茂御祖神社（京都）、宝満宮竈門神社（福岡）", history: "神武天皇の母。霊力が非常に強く、優れた魂（依り代）を宿す高貴な清き女神です。", benefit: "縁結び、安産・子宝、厄除け" },
+        { id: "omikane", name: "思兼神 (オモイカネノカミ)", shrine: "戸隠神社（長野）、秩父神社（埼玉）", history: "岩戸隠れの際、天照大御神を誘い出すための名案を考え出した、八百万の神々の知恵袋。", benefit: "学業成就、受験合格、技術向上" }
+    ];
 
-      /**
-       * 4. ヘルパー関数群（ロジックの疎結合化）
-       */
-      
-      // 配列からランダムに1つの要素を返す関数
-      function getRandomElement(array) {
-        const randomIndex = Math.floor(Math.random() * array.length);
-        return array[randomIndex];
-      }
+    let currentBookPage = 0; // 図鑑の現在のページインデックス (0〜24)
 
-      // おみくじを引くメインのイベントハンドラ
-      function drawFortune() {
-        // ボタン連打によるバグ・連続実行を防ぐための制御（簡易ロック）
-        if (btnDraw.disabled) return;
-        btnDraw.disabled = true;
+    function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-        // 矢印・初期ガイドの非表示化
-        floatingArrow.style.display = 'none';
-        placeholderText.style.display = 'none';
-        fortuneResult.classList.remove('show');
-        categoryList.classList.remove('show');
-
-        // シャッフル（ドラムロール）アニメーションの開始
-        displayArea.classList.add('shuffling');
+    function playOmikuji() {
+        document.getElementById('startScreen').style.display = 'none';
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('godListContainer').style.display = 'none';
+        document.getElementById('resultContainer').classList.remove('paper-open');
+        document.getElementById('animationArea').style.display = 'block';
+        document.getElementById('godNewBadge').style.display = 'none';
         
-        let counter = 0;
-        const shuffleInterval = setInterval(function() {
-          // ランダムに仮の運勢を表示して高速変化（演出）
-          const tempFortune = getRandomElement(fortuneKeys);
-          fortuneResult.innerText = tempFortune;
-          fortuneResult.style.color = fortuneDatabase[tempFortune].color;
-          fortuneResult.classList.add('show');
-          counter++;
-          
-          if (counter > 10) { // 約1秒間シャッフル演出を行う
-            clearInterval(shuffleInterval);
-            displayArea.classList.remove('shuffling');
-            finalizeResult();
-          }
-        }, 100);
+        const box = document.getElementById('omikujiBox');
+        const stick = document.getElementById('omikujiStick');
+        
+        box.classList.remove('shake-animation');
+        stick.classList.remove('pop-stick');
+        void box.offsetWidth; 
+        
+        box.classList.add('shake-animation');
 
-        function finalizeResult() {
-          // 運勢の最終決定
-          const finalFortune = getRandomElement(fortuneKeys);
-          const data = fortuneDatabase[finalFortune];
+        setTimeout(() => {
+            box.classList.remove('shake-animation');
+            stick.classList.add('pop-stick');
+        }, 700);
 
-          // 決定した運勢に対応する各カテゴリ用ランダムコメントの抽出
-          const selectedWork = getRandomElement(data.comments.work);
-          const selectedLove = getRandomElement(data.comments.love);
-          const selectedStudy = getRandomElement(data.comments.study);
-          const selectedMarriage = getRandomElement(data.comments.marriage);
-          const selectedRelocation = getRandomElement(data.comments.relocation);
-
-          // DOMの更新
-          fortuneResult.innerText = finalFortune;
-          fortuneResult.style.color = data.color;
-
-          commentWork.innerText = selectedWork;
-          commentLove.innerText = selectedLove;
-          commentStudy.innerText = selectedStudy;
-          commentMarriage.innerText = selectedMarriage;
-          commentRelocation.innerText = selectedRelocation;
-
-          // アニメーション表示の適用
-          setTimeout(function() {
-            fortuneResult.classList.add('show');
-            categoryList.classList.add('show');
+        setTimeout(() => {
+            document.getElementById('animationArea').style.display = 'none';
             
-            // ボタン制御解除と文言のアップデート
-            btnDraw.disabled = false;
-            btnDraw.innerHTML = 'もう一度引く <span class="inner-arrow">➔</span>';
-          }, 50);
-        }
-      }
+            const selectedFortune = getRandomElement(fortunes);
+            const categoryData = comments[selectedFortune];
 
-      // 5. イベントリスナー登録
-      btnDraw.addEventListener('click', drawFortune);
+            document.getElementById('fortuneResult').textContent = selectedFortune;
+            document.getElementById('jobComment').textContent = getRandomElement(categoryData.job);
+            document.getElementById('loveComment').textContent = getRandomElement(categoryData.love);
+            document.getElementById('studyComment').textContent = getRandomElement(categoryData.study);
+            document.getElementById('marriageComment').textContent = getRandomElement(categoryData.marriage);
+            document.getElementById('moveComment').textContent = getRandomElement(categoryData.move);
+
+            const selectedGod = getRandomElement(godData);
+            document.getElementById('godName').textContent = selectedGod.name;
+            document.getElementById('godShrine').textContent = selectedGod.shrine;
+            document.getElementById('godHistory').textContent = selectedGod.history;
+            document.getElementById('godBenefit').textContent = selectedGod.benefit;
+
+            const godStorageKey = `god-${selectedGod.id}`;
+            if (localStorage.getItem(godStorageKey) !== 'true') {
+                localStorage.setItem(godStorageKey, 'true');
+                document.getElementById('godNewBadge').style.display = 'block';
+            }
+
+            const resultBox = document.getElementById('resultContainer');
+            resultBox.style.display = 'block';
+            resultBox.classList.add('paper-open');
+
+            const now = new Date();
+            const storageKey = `stamp-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+            localStorage.setItem(storageKey, 'true');
+            
+        }, 1300);
+    }
+
+    function showCalendarAndStamp() {
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('godListContainer').style.display = 'none';
+        document.getElementById('calendarContainer').style.display = 'block';
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const todayIdx = now.getDate();
+
+        const reiwaYear = year - 2018;
+        document.getElementById('calendarMonthTitle').textContent = `令和${reiwaYear}年${month + 1}月 参拝記録`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        const tbody = document.getElementById('calendarBody');
+        tbody.innerHTML = '';
+
+        let date = 1;
+        for (let i = 0; i < 6; i++) {
+            let row = document.createElement('tr');
+            let hasCells = false;
+
+            for (let j = 0; j < 7; j++) {
+                let cell = document.createElement('td');
+                if (j === 0) cell.classList.add('sunday-text');
+
+                if (i === 0 && j < firstDay) {
+                    cell.textContent = '';
+                } else if (date > lastDate) {
+                    cell.textContent = '';
+                } else {
+                    cell.textContent = date;
+                    if (date === todayIdx) cell.classList.add('today-cell');
+
+                    const storageKey = `stamp-${year}-${month + 1}-${date}`;
+                    if (localStorage.getItem(storageKey) === 'true') {
+                        if (date === todayIdx) {
+                            cell.innerHTML = `${date}<div class="stamp-done" id="todayStamp">済</div>`;
+                        } else {
+                            cell.innerHTML = `${date}<div class="stamp-done stamp-animation">済</div>`;
+                        }
+                    }
+                    date++;
+                    hasCells = true;
+                }
+                row.appendChild(cell);
+            }
+            if (!hasCells) break;
+            tbody.appendChild(row);
+        }
+
+        setTimeout(() => {
+            const stamp = document.getElementById('todayStamp');
+            if (stamp) stamp.classList.add('stamp-animation');
+        }, 300);
+    }
+
+    // 🏛️ 見開き本形式で神様を表示する関数
+    function updateBookPage() {
+        const grid = document.getElementById('bookPageContent');
+        grid.innerHTML = '';
+
+        const god = godData[currentBookPage];
+        const isUnlocked = localStorage.getItem(`god-${god.id}`) === 'true';
+        const card = document.createElement('div');
+
+        if (isUnlocked) {
+            card.className = 'god-book-card';
+            card.innerHTML = `
+                <div class="book-god-name">⛩️ ${god.name}</div>
+                <div class="book-item"><span class="book-label">【主な神社】</span><span class="book-value">${god.shrine}</span></div>
+                <div class="book-item"><span class="book-label">【由緒功績】</span><span class="book-value">${god.history}</span></div>
+                <div class="book-item"><span class="book-label">【御利益】</span><span class="book-value"><strong>${god.benefit}</strong></span></div>
+            `;
+        } else {
+            card.className = 'god-book-card locked-page';
+            card.innerHTML = `
+                <div style="font-size: 50px; margin-bottom: 10px; color: #a8a089;">？</div>
+                <div class="book-god-name" style="border:none; color:#777;">？？ ？？ ？？</div>
+                <div style="font-size: 12px; color:#999; padding: 0 10px;">（まだご縁が結ばれていません。<br>日々の参拝おみくじで出会うと解放されます）</div>
+            `;
+        }
+        grid.appendChild(card);
+
+        // ページネーション表示更新
+        document.getElementById('pageNumDisplay').textContent = `第 ${currentBookPage + 1} 頁 / 全 ${godData.length} 頁`;
+        document.getElementById('prevPageBtn').disabled = (currentBookPage === 0);
+        document.getElementById('nextPageBtn').disabled = (currentBookPage === godData.length - 1);
+    }
+
+    function generateGodList() {
+        document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('godListContainer').style.display = 'block';
+
+        // 解放された神様の総数をカウント
+        let unlockedCount = 0;
+        godData.forEach(god => {
+            if (localStorage.getItem(`god-${god.id}`) === 'true') unlockedCount++;
+        });
+        document.getElementById('godCounter').textContent = `ご縁を結んだ神様: ${unlockedCount} / ${godData.length}`;
+
+        // 最初のページを表示
+        currentBookPage = 0;
+        updateBookPage();
+    }
+
+    // ページめくりボタンのイベント
+    document.getElementById('prevPageBtn').addEventListener('click', () => {
+        if (currentBookPage > 0) {
+            currentBookPage--;
+            updateBookPage();
+        }
     });
-  </script>
+
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+        if (currentBookPage < godData.length - 1) {
+            currentBookPage++;
+            updateBookPage();
+        }
+    });
+
+    document.getElementById('startBtn').addEventListener('click', playOmikuji);
+    document.getElementById('retryBtn').addEventListener('click', playOmikuji);
+    document.getElementById('endBtn').addEventListener('click', showCalendarAndStamp);
+    
+    document.getElementById('toGodListBtn').addEventListener('click', generateGodList);
+    document.getElementById('backToCalendarBtn').addEventListener('click', showCalendarAndStamp);
+    
+    document.getElementById('backToStartBtn').addEventListener('click', function() {
+        document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('startScreen').style.display = 'block';
+    });
+</script>
+
 </body>
 </html>
