@@ -501,7 +501,6 @@
 <body>
 
 <div class="omikuji-card">
-    <!-- 最初画面 -->
     <div id="startScreen">
         <h1>✨ 参拝開運御神籤 ✨</h1>
         <p>心を落ち着かせ、おみくじをお引きください</p>
@@ -509,9 +508,11 @@
             <div class="arrow">⬇</div>
             <button class="red-btn" id="startBtn">おみくじを引く</button>
         </div>
+        <div style="margin-top: 20px;">
+            <button class="sub-btn" id="topToGodListBtn" style="padding: 10px 20px; font-size: 15px;">⛩️ 神様名鑑を見る</button>
+        </div>
     </div>
 
-    <!-- アニメーションエリア -->
     <div class="animation-area" id="animationArea">
         <div class="omikuji-box" id="omikujiBox">
             <div class="box-title">御神籤</div>
@@ -519,7 +520,6 @@
         </div>
     </div>
 
-    <!-- おみくじ結果画面 -->
     <div class="result-container" id="resultContainer">
         <div style="font-size: 14px; color: #666;">謹んで運勢をお送りいたします</div>
         <div class="fortune-result" id="fortuneResult">-</div>
@@ -532,7 +532,6 @@
             <tr><td class="category-name">📦 転居</td><td class="category-text" id="moveComment"></td></tr>
         </table>
 
-        <!-- 本日縁のある神様 -->
         <hr class="god-separator">
         <div class="god-box">
             <div class="god-new-badge" id="godNewBadge">✨ 初お目見え！名鑑に登録されました ✨</div>
@@ -564,7 +563,6 @@
         </div>
     </div>
 
-    <!-- カレンダー参拝記録画面 -->
     <div class="calendar-container" id="calendarContainer">
         <div class="calendar-title" id="calendarMonthTitle">令和○年○月 参拝記録</div>
         <div>
@@ -582,19 +580,15 @@
         <button class="end-btn" id="backToStartBtn">最初の画面に戻る</button>
     </div>
 
-    <!-- 新・神様名鑑（見開き図鑑）画面 -->
     <div class="god-list-container" id="godListContainer">
         <div class="god-list-title">⛩️ 御神体・神様名鑑</div>
         <div class="god-counter" id="godCounter">ご縁を結んだ神様: 0 / 25</div>
         
-        <!-- 見開き和書レイアウト -->
         <div class="book-layout">
             <div class="book-page-content" id="bookPageContent">
-                <!-- JavaScriptでここに1ページ分の神様を出力 -->
-            </div>
+                </div>
         </div>
 
-        <!-- ページめくりコントロール -->
         <div class="page-controls">
             <button class="page-btn" id="prevPageBtn">◀ 前の頁</button>
             <span class="page-num" id="pageNumDisplay">第 1 頁 / 全 25 頁</span>
@@ -603,6 +597,7 @@
 
         <div style="text-align: center; margin-top: 25px;">
             <button class="sub-btn" id="backToCalendarBtn">📅 参拝記録に戻る</button>
+            <button class="end-btn" id="godListToStartBtn" style="margin-top:0; margin-left:10px; padding: 7px 20px; font-size:14px;">🏠 最初に戻る</button>
         </div>
     </div>
 </div>
@@ -647,7 +642,7 @@
             move: ['無理な移動は控え、現在の住居を整理整頓しましょう。', '下調べをいつもより念入りを行えば吉。']
         },
         '凶': {
-            job: ['ケアレスミスに注意。ダブルチェックを忘れずに。', '無理をせず、今日は定時で帰って体調を整えましょう。'],
+            job: ['ケアレスミスに注意。ダブルチェックを忘れずに. 。', '無理をせず、今日は定時で帰って体調を整えましょう。'],
             love: ['言葉のすれ違いに注意。相手を思いやる発言を。', '今は自分磨きに集中すると、後で良い波が来ます。'],
             study: ['集中力が途切れがち。適度な休憩を挟みましょう。', '難問にこだわらず、得意なところから手を付けて。'],
             marriage: ['周囲の意見に惑わされず、二人の意思を尊重して。', '一歩引いて、冷静に将来を見つめ直すとき。'],
@@ -671,8 +666,7 @@
         { id: "oyamatsumi", name: "大山津見神 (オオヤマツミノカミ)", shrine: "大山祇神社（愛媛）、三島大社（静岡）", history: "全ての山林を支配する山の総大将。お酒造りの祖神としても知られます。", benefit: "山林守護、商売繁盛、金運上昇" },
         { id: "sarutahiko", name: "猿田毘古神 (サルタヒコノカミ)", shrine: "椿大神社（三重）、猿田彦神社（三重）", history: "天孫降臨の道案内を務めた神。物事を良い方向へ導くみちひらきの神です。", benefit: "交通安全、物事の道開き、建築安全" },
         { id: "sukunahikona", name: "少彦名神 (スクナヒコナノカミ)", shrine: "少彦名神社（大阪）、神田明神（東京）", history: "大国主神と協力した小さな知恵の神。医薬や温泉の文化を伝えました。", benefit: "病気平癒、身体健康、醸造安全" },
-        { id: "yamatotakeru", name: "日本武尊 (ヤマトタケルノミコト)", shrine: "大鳥大社（大阪）、熱田神宮（愛知）", history: "知略と武勇で日本中を平定した、神話時代屈指の悲劇の伝説的英雄です。", benefit: "開運出世、除災招福、国土安泰" },
-        // 🆕 追加：16柱〜25柱
+        { id: "yamatotakeru", name: "日本武尊 (ヤマトタけるノミコト)", shrine: "大鳥大社（大阪）、熱田神宮（愛知）", history: "知略と武勇で日本中を平定した、神話時代屈指の悲劇の伝説的英雄です。", benefit: "開運出世、除災招福、国土安泰" },
         { id: "ninigi", name: "瓊瓊杵尊 (ニニギノミコト)", shrine: "霧島神宮（鹿児島）、高千穂神社（宮崎）", history: "天照大御神の孫で、地上の国を治めるため三種の神器と共に高千穂へ降臨しました。", benefit: "国家安泰、五穀豊穣、家内安全" },
         { id: "futsunonushi", name: "経津主神 (フツヌシノカミ)", shrine: "香取神宮（千葉）、春日大社（奈良）", history: "タケミカヅチと共に地上に降り立ち、不服な神々を屈服させた鋭い剣の武神です。", benefit: "武芸上達、勝負運、国家安泰" },
         { id: "toyouke", name: "豊受大御神 (トヨウケノオオミカミ)", shrine: "伊勢神宮外宮（三重）", history: "天照大御神の食事を司るために呼ばれた、衣食住と産業全般を守護する大女神。", benefit: "衣食住守護、諸産業繁盛、開運" },
@@ -685,7 +679,7 @@
         { id: "omikane", name: "思兼神 (オモイカネノカミ)", shrine: "戸隠神社（長野）、秩父神社（埼玉）", history: "岩戸隠れの際、天照大御神を誘い出すための名案を考え出した、八百万の神々の知恵袋。", benefit: "学業成就、受験合格、技術向上" }
     ];
 
-    let currentBookPage = 0; // 図鑑の現在のページインデックス (0〜24)
+    let currentBookPage = 0; 
 
     function getRandomElement(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
@@ -751,6 +745,7 @@
     }
 
     function showCalendarAndStamp() {
+        document.getElementById('startScreen').style.display = 'none'; // 🆕 最初画面を非表示に
         document.getElementById('resultContainer').style.display = 'none';
         document.getElementById('godListContainer').style.display = 'none';
         document.getElementById('calendarContainer').style.display = 'block';
@@ -809,7 +804,6 @@
         }, 300);
     }
 
-    // 🏛️ 見開き本形式で神様を表示する関数
     function updateBookPage() {
         const grid = document.getElementById('bookPageContent');
         grid.innerHTML = '';
@@ -836,29 +830,26 @@
         }
         grid.appendChild(card);
 
-        // ページネーション表示更新
         document.getElementById('pageNumDisplay').textContent = `第 ${currentBookPage + 1} 頁 / 全 ${godData.length} 頁`;
         document.getElementById('prevPageBtn').disabled = (currentBookPage === 0);
         document.getElementById('nextPageBtn').disabled = (currentBookPage === godData.length - 1);
     }
 
     function generateGodList() {
+        document.getElementById('startScreen').style.display = 'none'; // 🆕 最初画面から来ても大丈夫なように非表示化
         document.getElementById('calendarContainer').style.display = 'none';
         document.getElementById('godListContainer').style.display = 'block';
 
-        // 解放された神様の総数をカウント
         let unlockedCount = 0;
         godData.forEach(god => {
             if (localStorage.getItem(`god-${god.id}`) === 'true') unlockedCount++;
         });
         document.getElementById('godCounter').textContent = `ご縁を結んだ神様: ${unlockedCount} / ${godData.length}`;
 
-        // 最初のページを表示
         currentBookPage = 0;
         updateBookPage();
     }
 
-    // ページめくりボタンのイベント
     document.getElementById('prevPageBtn').addEventListener('click', () => {
         if (currentBookPage > 0) {
             currentBookPage--;
@@ -878,10 +869,17 @@
     document.getElementById('endBtn').addEventListener('click', showCalendarAndStamp);
     
     document.getElementById('toGodListBtn').addEventListener('click', generateGodList);
+    document.getElementById('topToGodListBtn').addEventListener('click', generateGodList); // 🆕 最初画面のボタンイベント
     document.getElementById('backToCalendarBtn').addEventListener('click', showCalendarAndStamp);
     
     document.getElementById('backToStartBtn').addEventListener('click', function() {
         document.getElementById('calendarContainer').style.display = 'none';
+        document.getElementById('startScreen').style.display = 'block';
+    });
+
+    // 🆕 神様名鑑から直接最初画面に戻るボタンイベント
+    document.getElementById('godListToStartBtn').addEventListener('click', function() {
+        document.getElementById('godListContainer').style.display = 'none';
         document.getElementById('startScreen').style.display = 'block';
     });
 </script>
